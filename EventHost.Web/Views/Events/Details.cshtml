@@ -1,0 +1,245 @@
+@using System.Net
+@using EventHost.Web.Models.Registrations
+@model EventHost.Web.Models.Events.EventDetailsViewModel
+
+@{
+    ViewData["Title"] = Model.Event.Name;
+    ViewData["Subtitle"] = $"{Model.Event.StartOn:ddd, MMM dd} - {Model.Event.EndOn:ddd, MMM dd, yyyy}";
+}
+
+@if (Model.UserCanEdit)
+{
+    <div class="actions">
+        <a asp-action="Edit" asp-route-id="@Model.Event.Id" class="btn btn-default">Edit</a>
+    </div>
+}
+
+<div class="event-description">
+    @Html.Raw(WebUtility.HtmlDecode(Model.Event.Description))
+</div>
+
+<div class="reg-info">
+    @if (Model.RegistrationIsOpen)
+    {
+        <strong>Registration is open through @Model.Event.RegistrationEndOn?.ToString("g")</strong>
+    }
+    else
+    {
+        <strong>Registration opens @Model.Event.RegistrationStartOn?.ToString("g")</strong>
+    }
+</div>
+
+@if (Model.UserCanEdit)
+{
+    <div class="actions">
+        <a asp-action="Create" asp-controller="Sections" asp-route-eventId="@Model.Event.Id" class="btn btn-success">New section</a>
+    </div>
+}
+
+<div class="sections">
+    @foreach (var sec in Model.Sections)
+    {
+        <div class="section" data-section-id="@sec.Id" data-section-name="@sec.Name">
+            <h3>
+                @sec.Name
+                <small>
+                    @($"{sec.StartOn:ddd, h:mm tt} - {sec.EndOn:ddd, h:mm tt}")
+                    <a asp-action="Edit" asp-controller="Sections" asp-route-eventId="@Model.Event.Id" asp-route-id="@sec.Id" style="margin-left: 10px;">Edit</a>
+                </small>
+            </h3>
+
+            <div class="actions">
+                <a asp-action="Create" asp-controller="Sessions" asp-route-eventId="@Model.Event.Id" asp-route-sectionId="@sec.Id" class="btn btn-success">New session</a>
+            </div>
+
+            <div class="sessions">
+                @foreach (var session in Model.Sessions.Where(x => x.SectionId == sec.Id))
+                {
+                    <div class="panel panel-default session" data-session-id="@session.Id" data-session-name="@session.Name">
+                        <div class="panel-heading">
+                            <strong>@session.Name</strong>
+                            <span class="pull-right">
+                                Hosted by @session.HostName
+                                <a asp-action="Edit" asp-controller="Sessions" asp-route-eventId="@Model.Event.Id" asp-route-id="@session.Id" style="margin-left: 10px;">Edit</a>
+                            </span>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="registrations" id="@($"session-{session.Id}-registration")">
+                                        @{
+                                            List<RegistrationModel> registrations;
+                                            var regCount = 0;
+                                            if (Model.RegistrationsBySession.TryGetValue(session.Id, out registrations))
+                                            {
+                                                regCount = registrations.Count;
+                                            }
+                                            if (registrations == null)
+                                            {
+                                                registrations = new List<RegistrationModel>();
+                                            }
+
+                                            var availableSpots = session.MaxSpots - session.ReservedSpots - regCount;
+                                        }
+
+                                        @if (availableSpots > 0)
+                                        {
+                                            <div class="alert alert-info text-center">
+                                                <strong>
+                                                    @($"{availableSpots} of {session.MaxSpots} spots available")
+                                                </strong>
+                                            </div>
+                                            <div class="actions">
+                                                @if (!registrations.Any(x => x.UserId == Model.CurrentUserId))
+                                                {
+                                                    <button type="button" class="btn btn-success btn-register-session" data-toggle="modal" data-target="#register-modal" data-session-id="@session.Id">
+                                                        Register
+                                                    </button>
+                                                }
+                                                else
+                                                {
+                                                    <strong>
+                                                        You are registered for this session.
+                                                        <a href="#" class="btn-unregister"><span class="text-danger">Cancel</span></a>
+                                                    </strong>
+
+                                                }
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="alert alert-warning text-center">
+                                                <strong>This session is full</strong>
+                                            </div>
+                                        }
+
+                                        <h4>Participants</h4>
+                                        <div class="session-reg-list" id="@($"session-{session.Id}-reg-list")">
+                                            @await Html.PartialAsync("_RegistrationList", registrations)
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-9 session-description">
+                                    @Html.Raw(WebUtility.HtmlDecode(session.Description))
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="modal fade" id="register-modal" role="dialog" tabindex="-1">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <form id="register-form" asp-action="Create" asp-controller="Registrations">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="exampleModalLabel">Register</h4>
+                        </div>
+                        <div class="modal-body">
+                            You are registering for <strong><span id="register-session-name"></span></strong> during the
+                            <strong><span id="register-section-name"></span></strong> section.
+                        </div>
+                        <div class="modal-footer">
+                            <input type="hidden" id="register-event-id" />
+                            <input type="hidden" id="register-session-id" />
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Register</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section scripts
+{
+    <script>
+        $(document).ready(function () {
+            $('#register-modal').on('show.bs.modal', function (event) {
+                var btn = $(event.relatedTarget);
+                var sessionEle = btn.closest('.session');
+                var sectionEle = btn.closest('.section');
+
+                var session = {
+                    id: sessionEle.data('sessionId'),
+                    name: sessionEle.data('sessionName')
+                };
+                var section = {
+                    id: sectionEle.data('sectionId'),
+                    name: sectionEle.data('sectionName')
+                };
+                
+                $(this).find('#register-session-name').text(session.name);
+                $(this).find('#register-section-name').text(section.name);
+                $(this).find('#register-event-id').val(@Model.Event.Id);
+                $(this).find('#register-session-id').val(session.id);
+            });
+
+            $('#register-form').on('submit', function (e) {
+                e.preventDefault();
+
+                $.ajax({
+                    url: $(this).attr('action'),
+                    type: 'POST',
+                    data: {
+                        eventId: $('#register-event-id').val(),
+                        sessionId: $('#register-session-id').val()
+                    },
+                    success: function () {
+                        $('#register-modal').modal('hide');
+                        refreshRegistrations($('#register-session-id').val());
+                    },
+                    error: function (jqXhr) {
+                        alert(jqXhr.responseText);
+                    }
+                });
+            });
+
+            $('.btn-unregister').on('click', function (e) {
+                e.preventDefault();
+
+                if (!confirm('Are you sure you want to cancel your registration?')) {
+                    return;
+                }
+
+                var btn = $(this);
+                var sessionEle = btn.closest('.session');
+                var sectionEle = btn.closest('.section');
+                var sessionId = sessionEle.data('sessionId');
+
+                $.ajax({
+                    url: '@Url.Action("Delete", "Registrations")',
+                    type: 'DELETE',
+                    data: {
+                        eventId: @Model.Event.Id,
+                        sessionId: sessionId,
+                        userId: @Model.CurrentUserId
+                    },
+                    success: function () {
+                        refreshRegistrations(sessionId);
+                    },
+                    error: function (jqXhr) {
+                        alert(jqXhr.responseText);
+                    }
+                });
+            });
+
+            var refreshRegistrations = function (sessionId) {
+                $.ajax({
+                    url: '@Url.Action("PartialList", "Registrations")',
+                    type: 'GET',
+                    data: {
+                        eventId: @Model.Event.Id,
+                        sessionId: sessionId
+                    },
+                    success: function (result) {
+                        $('#session-' + sessionId + '-reg-list').html(result);
+                    }
+                });
+            }
+        })
+    </script>    
+}

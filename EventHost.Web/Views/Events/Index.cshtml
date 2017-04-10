@@ -1,0 +1,51 @@
+@model EventHost.Web.Models.Events.EventListViewModel
+
+@{
+    ViewData["Title"] = "Events";
+}
+
+<p>
+    <a asp-action="Create" class="btn btn-success">New event</a>
+</p>
+
+<table class="table table-condensed table-striped">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Dates</th>
+            <th>Registration dates</th>
+            <th>Enable wait lists</th>
+            <th>Enable auto-approvals</th>
+            <th>Owner</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model.Events)
+    {
+        <tr>
+            <td>
+                <a asp-action="Details" asp-route-id="@item.Id">@item.Name</a>
+            </td>
+            <td>
+                @($"{item.StartOn.ToString("d")} - {item.EndOn.ToString("d")}")
+            </td>
+            <td>
+                @($"{item.RegistrationStartOn?.ToString("d")} - {item.RegistrationEndOn?.ToString("d")}")
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EnableWaitLists)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EnableAutomaticApproval)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.OwnerName)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

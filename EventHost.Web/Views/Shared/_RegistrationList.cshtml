@@ -1,0 +1,7 @@
+@model IEnumerable<EventHost.Web.Models.Registrations.RegistrationModel>
+<ol>
+    @foreach (var reg in Model)
+    {
+        <li>@reg.UserName</li>
+    }
+</ol>
