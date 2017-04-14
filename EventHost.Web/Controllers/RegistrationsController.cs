@@ -14,6 +14,8 @@ using EventHost.Web.Mappers;
 using System.Net;
 using Microsoft.EntityFrameworkCore;
 using AutoMapper.QueryableExtensions;
+using AutoMapper;
+using EventHost.Web.Models.Sessions;
 
 namespace EventHost.Web.Controllers
 {
@@ -33,18 +35,31 @@ namespace EventHost.Web.Controllers
             _userManager = userManager;
             _logger = loggerFactory.CreateLogger<RegistrationsController>();
         }
-
-        [HttpGet("partial-list")]
-        public async Task<IActionResult> PartialList(int eventId, int? sessionId = null)
+        
+        [HttpGet("partial")]
+        public async Task<IActionResult> SessionRegistrations(int sessionId)
         {
-            var registrations = await _dbContext.Registrations
-                .Where(x => x.EventId == eventId
-                    && (!sessionId.HasValue || x.SessionId == sessionId.Value))
+            var currentUser = await _userManager.GetUserAsync(User);
+
+            var session = await _dbContext.Sessions.FindAsync(sessionId);
+            if (session == null)
+            {
+                return NotFound();
+            }
+
+            var model = new SessionRegistrationViewModel
+            {
+                Session = Mapper.Map<SessionModel>(session)
+            };
+
+            model.Registrations = await _dbContext.Registrations
+                .Where(x => x.SessionId == sessionId)
                 .OrderBy(x => x.CreatedOn)
                 .ProjectTo<RegistrationModel>()
                 .ToListAsync();
+            model.CurrentUserIsRegistered = model.Registrations.Select(x => x.UserId).Contains(currentUser.Id);
 
-            return PartialView("_RegistrationList", registrations);
+            return PartialView("_SessionRegistrations", model);
         }
 
         [HttpPost("")]
@@ -74,6 +89,15 @@ namespace EventHost.Web.Controllers
                 if (existing)
                 {
                     return BadRequest("User is already registered for session");
+                }
+
+                var hasSameSectionReg = await _dbContext.Registrations
+                    .AnyAsync(x => x.Session.SectionId == session.SectionId
+                        && x.UserId == currentUser.Id);
+
+                if (hasSameSectionReg)
+                {
+                    return BadRequest("User is already registered for session in the time section");
                 }
 
                 var registration = new Registration

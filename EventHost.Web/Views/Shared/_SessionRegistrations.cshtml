@@ -1,0 +1,48 @@
+﻿@model EventHost.Web.Models.Registrations.SessionRegistrationViewModel
+<div class="registrations" id="@($"session-{Model.Session.Id}-registration")">
+    @{
+        var regCount = Model.Registrations.Count();
+        var availableSpots = Model.Session.MaxSpots - Model.Session.ReservedSpots - regCount;
+    }
+
+    @if (availableSpots > 0)
+    {
+        <div class="alert alert-info text-center">
+            <strong>
+                @($"{availableSpots} of {Model.Session.MaxSpots} spots available")
+            </strong>
+        </div>
+        <div class="actions">
+            @if (!Model.CurrentUserIsRegistered)
+            {
+                <button type="button" class="btn btn-success btn-register-session" data-toggle="modal" data-target="#register-modal" data-session-id="@Model.Session.Id">
+                    Register
+                </button>
+            }
+            else
+            {
+                <strong>
+                    You are registered for this session.
+                    <a href="#" class="btn-unregister"><span class="text-danger">Cancel</span></a>
+                </strong>
+
+            }
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning text-center">
+            <strong>This session is full</strong>
+        </div>
+    }
+
+    <h4>Participants</h4>
+    <div class="session-reg-list" id="@($"session-{Model.Session.Id}-reg-list")">
+        <ol>
+            @foreach (var reg in Model.Registrations)
+            {
+                <li>@reg.UserName</li>
+            }
+        </ol>
+    </div>
+</div>

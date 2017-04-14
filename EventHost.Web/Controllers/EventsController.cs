@@ -88,26 +88,12 @@ namespace EventHost.Web.Controllers
                 .Where(x => x.EventId == evt.Id)
                 .ProjectTo<SessionModel>()
                 .ToListAsync();
-
-            //model.SessionsBySection = await _dbContext.Sessions
-            //    .Where(x => x.EventId == evt.Id)
-            //    .ProjectTo<SessionModel>()
-            //    .GroupBy(x => x.SectionId)
-            //    .ToDictionaryAsync(x => x.Key, x => x.ToList());
-
-            //model.Registrations = await _dbContext.Registrations
-            //    .Where(x => x.EventId == evt.Id)
-            //    .OrderBy(x => x.CreatedOn)
-            //    .ProjectTo<RegistrationModel>()
-            //    .ToListAsync();
-
-
-            model.RegistrationsBySession = await _dbContext.Registrations
+            
+            model.Registrations = await _dbContext.Registrations
                 .Where(x => x.EventId == evt.Id)
                 .OrderBy(x => x.CreatedOn)
                 .ProjectTo<RegistrationModel>()
-                .GroupBy(x => x.SessionId)
-                .ToDictionaryAsync(x => x.Key, x => x.ToList());
+                .ToListAsync();
 
             return View(model);
         }

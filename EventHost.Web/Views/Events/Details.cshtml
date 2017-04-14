@@ -67,56 +67,12 @@
                             <div class="row">
                                 <div class="col-md-3">
                                     <div class="registrations" id="@($"session-{session.Id}-registration")">
-                                        @{
-                                            List<RegistrationModel> registrations;
-                                            var regCount = 0;
-                                            if (Model.RegistrationsBySession.TryGetValue(session.Id, out registrations))
-                                            {
-                                                regCount = registrations.Count;
-                                            }
-                                            if (registrations == null)
-                                            {
-                                                registrations = new List<RegistrationModel>();
-                                            }
-
-                                            var availableSpots = session.MaxSpots - session.ReservedSpots - regCount;
-                                        }
-
-                                        @if (availableSpots > 0)
-                                        {
-                                            <div class="alert alert-info text-center">
-                                                <strong>
-                                                    @($"{availableSpots} of {session.MaxSpots} spots available")
-                                                </strong>
-                                            </div>
-                                            <div class="actions">
-                                                @if (!registrations.Any(x => x.UserId == Model.CurrentUserId))
-                                                {
-                                                    <button type="button" class="btn btn-success btn-register-session" data-toggle="modal" data-target="#register-modal" data-session-id="@session.Id">
-                                                        Register
-                                                    </button>
-                                                }
-                                                else
-                                                {
-                                                    <strong>
-                                                        You are registered for this session.
-                                                        <a href="#" class="btn-unregister"><span class="text-danger">Cancel</span></a>
-                                                    </strong>
-
-                                                }
-                                            </div>
-                                        }
-                                        else
-                                        {
-                                            <div class="alert alert-warning text-center">
-                                                <strong>This session is full</strong>
-                                            </div>
-                                        }
-
-                                        <h4>Participants</h4>
-                                        <div class="session-reg-list" id="@($"session-{session.Id}-reg-list")">
-                                            @await Html.PartialAsync("_RegistrationList", registrations)
-                                        </div>
+                                        @await  Html.PartialAsync("_SessionRegistrations", new SessionRegistrationViewModel
+                                           {
+                                               Session = session,
+                                               Registrations = Model.Registrations.Where(x => x.SessionId == session.Id),
+                                               CurrentUserIsRegistered = Model.Registrations.Where(x => x.SessionId == session.Id).Select(x=> x.UserId).Contains(Model.CurrentUserId)
+                                           })
                                     </div>
                                 </div>
                                 <div class="col-md-9 session-description">
@@ -229,14 +185,13 @@
 
             var refreshRegistrations = function (sessionId) {
                 $.ajax({
-                    url: '@Url.Action("PartialList", "Registrations")',
+                    url: '@Url.Action("SessionRegistrations", "Registrations")',
                     type: 'GET',
                     data: {
-                        eventId: @Model.Event.Id,
                         sessionId: sessionId
                     },
                     success: function (result) {
-                        $('#session-' + sessionId + '-reg-list').html(result);
+                        $('#session-' + sessionId + '-registration').parent().html(result);
                     }
                 });
             }
