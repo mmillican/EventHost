@@ -65,15 +65,15 @@
                         </div>
                         <div class="panel-body">
                             <div class="row">
-                                <div class="col-md-3">
-                                    <div class="registrations" id="@($"session-{session.Id}-registration")">
-                                        @await  Html.PartialAsync("_SessionRegistrations", new SessionRegistrationViewModel
-                                           {
-                                               Session = session,
-                                               Registrations = Model.Registrations.Where(x => x.SessionId == session.Id),
-                                               CurrentUserIsRegistered = Model.Registrations.Where(x => x.SessionId == session.Id).Select(x=> x.UserId).Contains(Model.CurrentUserId)
-                                           })
-                                    </div>
+                                <div class="col-md-3 registrations" id="@($"session-{session.Id}-registration")">
+                                    @await  Html.PartialAsync("_SessionRegistrations", new SessionRegistrationViewModel
+                                        {
+                                            Session = session,
+                                            Registrations = Model.Registrations.Where(x => x.SessionId == session.Id),
+                                            CurrentUserIsRegistered = Model.Registrations.Where(x => x.SessionId == session.Id).Select(x=> x.UserId).Contains(Model.CurrentUserId),
+                                            RequiresApproval = !Model.Event.EnableAutomaticApproval,
+                                            UserCanManageRegistrations = Model.CurrentUserId == Model.Event.OwnerUserId
+                                        })
                                 </div>
                                 <div class="col-md-9 session-description">
                                     @Html.Raw(WebUtility.HtmlDecode(session.Description))
@@ -154,7 +154,7 @@
                 });
             });
 
-            $('.btn-unregister').on('click', function (e) {
+            $('.registrations').on('click', '.btn-unregister', function (e) {
                 e.preventDefault();
 
                 if (!confirm('Are you sure you want to cancel your registration?')) {
@@ -183,6 +183,46 @@
                 });
             });
 
+            $('.registrations').on('click', '.btn-approve', function (e) {
+                e.preventDefault();
+
+                var btn = $(this),
+                    regEle = $(this).closest('.registration'),
+                    regId = regEle.data('regId'),
+                    sessionId = regEle.closest('.session').data('sessionId');
+
+                $.ajax({
+                    url: '/registrations/approve/' + regId,
+                    type: 'POST',
+                    success: function (result) {
+                        refreshRegistrations(sessionId);
+                    },
+                    error: function (jqXhr) {
+                        alert(jqXhr.responseText);
+                    }
+                });
+            });
+
+            $('.registrations').on('click', '.btn-unapprove', function (e) {
+                e.preventDefault();
+
+                var btn = $(this),
+                    regEle = $(this).closest('.registration'),
+                    regId = regEle.data('regId'),
+                    sessionId = regEle.closest('.session').data('sessionId');
+
+                $.ajax({
+                    url: '/registrations/unapprove/' + regId,
+                    type: 'POST',
+                    success: function (result) {
+                        refreshRegistrations(sessionId);
+                    },
+                    error: function (jqXhr) {
+                        alert(jqXhr.responseText);
+                    }
+                });
+            });
+
             var refreshRegistrations = function (sessionId) {
                 $.ajax({
                     url: '@Url.Action("SessionRegistrations", "Registrations")',
@@ -191,7 +231,7 @@
                         sessionId: sessionId
                     },
                     success: function (result) {
-                        $('#session-' + sessionId + '-registration').parent().html(result);
+                        $('#session-' + sessionId + '-registration').html(result);
                     }
                 });
             }

@@ -1,5 +1,5 @@
 ﻿@model EventHost.Web.Models.Registrations.SessionRegistrationViewModel
-<div class="registrations" id="@($"session-{Model.Session.Id}-registration")">
+<div>
     @{
         var regCount = Model.Registrations.Count();
         var availableSpots = Model.Session.MaxSpots - Model.Session.ReservedSpots - regCount;
@@ -41,7 +41,31 @@
         <ol>
             @foreach (var reg in Model.Registrations)
             {
-                <li>@reg.UserName</li>
+                <li class="registration" data-reg-id="@reg.Id" data-user-id="@reg.UserId">
+                    @if (Model.RequiresApproval && Model.UserCanManageRegistrations)
+                    {
+                        if (!reg.ApprovedOn.HasValue)
+                        {
+                            <a href="#" class="btn-icon btn-approve" title="Approve this registration">
+                                <span class="text-success glyphicon glyphicon-ok"></span>
+                            </a>
+                        }
+                        else
+                        {
+                            <a href="#" class="btn-icon btn-unapprove" title="Unapprove this registration">
+                                <span class="glyphicon glyphicon-remove"></span>
+                            </a>
+                        }
+                    }
+                    @if (Model.UserCanManageRegistrations)
+                    {
+                        <a href="#" class="btn-icon btn-remove" title="Remove this registration">
+                            <span class="text-danger glyphicon glyphicon-trash"></span>
+                        </a>
+                    }
+
+                    @reg.UserName
+                </li>
             }
         </ol>
     </div>

@@ -47,9 +47,17 @@ namespace EventHost.Web.Controllers
                 return NotFound();
             }
 
+            var evt = await _dbContext.Events.FindAsync(session.EventId);
+            if (evt == null)
+            {
+                return NotFound();
+            }
+            
             var model = new SessionRegistrationViewModel
             {
-                Session = Mapper.Map<SessionModel>(session)
+                Session = Mapper.Map<SessionModel>(session),
+                UserCanManageRegistrations = currentUser.Id == evt.OwnerUserId,
+                RequiresApproval = !evt.EnableAutomaticApproval
             };
 
             model.Registrations = await _dbContext.Registrations
@@ -161,6 +169,82 @@ namespace EventHost.Web.Controllers
                 _logger.LogError(2, ex, "Error deleting registration", eventId, sessionId);
 
                 return StatusCode((int)HttpStatusCode.InternalServerError, "Error deleting registration");
+            }
+        }
+
+        [HttpPost("approve/{id}")]
+        public async Task<IActionResult> Approve(int id)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+
+            var registration = await _dbContext.Registrations.FindAsync(id);
+            if (registration == null)
+                return NotFound();
+
+            var evt = await _dbContext.Events.FindAsync(registration.EventId);
+            if (evt == null)
+                return NotFound();
+
+            if (currentUser.Id != evt.OwnerUserId)
+                return Unauthorized();
+
+            if (evt.EnableAutomaticApproval)
+                return BadRequest("Event does not require approvals");
+
+            if (registration.ApprovedOn.HasValue)
+                return BadRequest("Registration already approved");
+
+            try
+            {
+                registration.ApprovedOn = DateTime.UtcNow;
+                await _dbContext.SaveChangesAsync();
+
+                var result = registration.ToModel();
+                return Ok(result);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(3, ex, "Error approving registration", registration.Id, evt.Id);
+
+                return StatusCode((int)HttpStatusCode.InternalServerError, "Error approving registration");
+            }
+        }
+
+        [HttpPost("unapprove/{id}")]
+        public async Task<IActionResult> Unapprove(int id)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+
+            var registration = await _dbContext.Registrations.FindAsync(id);
+            if (registration == null)
+                return NotFound();
+
+            var evt = await _dbContext.Events.FindAsync(registration.EventId);
+            if (evt == null)
+                return NotFound();
+
+            if (currentUser.Id != evt.OwnerUserId)
+                return Unauthorized();
+
+            if (evt.EnableAutomaticApproval)
+                return BadRequest("Event does not require approvals");
+
+            if (!registration.ApprovedOn.HasValue)
+                return BadRequest("Registration not approved");
+
+            try
+            {
+                registration.ApprovedOn = null;
+                await _dbContext.SaveChangesAsync();
+
+                var result = registration.ToModel();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(4, ex, "Error unapproving registration", registration.Id, evt.Id);
+
+                return StatusCode((int)HttpStatusCode.InternalServerError, "Error unapproving registration");
             }
         }
     }

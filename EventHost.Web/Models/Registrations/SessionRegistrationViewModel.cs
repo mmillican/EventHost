@@ -9,5 +9,8 @@ namespace EventHost.Web.Models.Registrations
 
         public bool CurrentUserIsRegistered { get; set; }
         public IEnumerable<RegistrationModel> Registrations { get; set; }
+
+        public bool RequiresApproval { get; set; }
+        public bool UserCanManageRegistrations { get; set; }
     }
 }
