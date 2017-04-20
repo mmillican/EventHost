@@ -10,7 +10,8 @@
 @if (Model.UserCanEdit)
 {
     <div class="actions">
-        <a asp-action="Edit" asp-route-id="@Model.Event.Id" class="btn btn-default">Edit</a>
+        <a asp-action="Edit" asp-route-id="@Model.Event.Id" class="btn btn-default">Edit event</a>
+        <a asp-action="Create" asp-controller="Sections" asp-route-eventId="@Model.Event.Id" class="btn btn-success">New section</a>
     </div>
 }
 
@@ -29,18 +30,24 @@
     }
 </div>
 
-@if (Model.UserCanEdit)
-{
-    <div class="actions">
-        <a asp-action="Create" asp-controller="Sections" asp-route-eventId="@Model.Event.Id" class="btn btn-success">New section</a>
-    </div>
-}
+<p>
+    <ul class="list-inline">
+        <li><strong>Sections:</strong></li>
+        @foreach(var sec in Model.Sections)
+        {
+            <li><a href="#section-@sec.Id">@sec.Name</a></li>
 
+        }
+    </ul>
+</p>
+
+<hr />
 <div class="sections">
     @foreach (var sec in Model.Sections)
     {
         <div class="section" data-section-id="@sec.Id" data-section-name="@sec.Name">
             <h3>
+                <a id="section-@sec.Id"></a>
                 @sec.Name
                 <small>
                     @($"{sec.StartOn:ddd, h:mm tt} - {sec.EndOn:ddd, h:mm tt}")
@@ -57,6 +64,7 @@
                 {
                     <div class="panel panel-default session" data-session-id="@session.Id" data-session-name="@session.Name">
                         <div class="panel-heading">
+                            <a id="session-@session.Id"></a>
                             <strong>@session.Name</strong>
                             <span class="pull-right">
                                 Hosted by @session.HostName
