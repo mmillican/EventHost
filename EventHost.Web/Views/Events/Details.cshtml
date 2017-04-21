@@ -12,6 +12,7 @@
     <div class="actions">
         <a asp-action="Edit" asp-route-id="@Model.Event.Id" class="btn btn-default">Edit event</a>
         <a asp-action="Create" asp-controller="Sections" asp-route-eventId="@Model.Event.Id" class="btn btn-success">New section</a>
+        <a asp-action="EventRegistrations" asp-controller="Registrations" asp-route-eventId="@Model.Event.Id" class="btn btn-default">View registrations</a>
     </div>
 }
 

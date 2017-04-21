@@ -1,0 +1,45 @@
+﻿@model EventHost.Web.Models.Registrations.EventRegistrationsViewModel
+@{ 
+    ViewData["Title"] = $"{Model.Event.Name} registrations";
+
+    var sectionColWidth = 100 - 20; // Name col is 20%
+    sectionColWidth = sectionColWidth / Model.Sections.Count;
+}
+
+<div class="actions">
+    <a asp-action="Details" asp-controller="Events" asp-route-id="@Model.Event.Id" class="btn btn-default">&laquo; Back to event</a>
+</div>
+
+<table class="table table-striped table-condensed table-hover">
+    <thead>
+        <tr>
+            <th></th>
+            <th colspan="@Model.Sections.Count" class="text-center text-capitalize">Sections</th>
+        </tr>
+        <tr>
+            <th style="width: 20%;">Name</th>
+            @foreach(var sec in Model.Sections)
+            {
+                <th style="width: @($"{sectionColWidth}%")">@sec.Name</th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var registrant in Model.RegisteredUsers)
+        {
+            <tr>
+                <td>@($"{registrant.LastName}, {registrant.FirstName}")</td>
+                @foreach(var sec in Model.Sections)
+                {
+                    var sectionReg = Model.Registrations.SingleOrDefault(x => x.SectionId == sec.Id && x.UserId == registrant.Id);
+                    <td>
+                        @if(sectionReg != null)
+                        {
+                            @sectionReg.SessionName
+                        }
+                    </td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>

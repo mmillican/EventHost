@@ -16,6 +16,8 @@ using Microsoft.EntityFrameworkCore;
 using AutoMapper.QueryableExtensions;
 using AutoMapper;
 using EventHost.Web.Models.Sessions;
+using EventHost.Web.Models.Sections;
+using EventHost.Web.Models.Users;
 
 namespace EventHost.Web.Controllers
 {
@@ -34,6 +36,40 @@ namespace EventHost.Web.Controllers
             _dbContext = dbContext;
             _userManager = userManager;
             _logger = loggerFactory.CreateLogger<RegistrationsController>();
+        }
+
+        [HttpGet("~/events/{eventId}/registrations")]
+        public async Task<IActionResult> EventRegistrations(int eventId)
+        {
+            var evt = await _dbContext.Events.FindAsync(eventId);
+            if (evt == null)
+            {
+                return NotFound();
+            }
+
+            var model = new EventRegistrationsViewModel();
+            model.Event = evt.ToModel();
+
+            model.Sections = await _dbContext.Sections
+                .Where(x => x.EventId == evt.Id)
+                .OrderBy(x => x.StartOn)
+                .ProjectTo<SectionModel>()
+                .ToListAsync();
+
+            model.Registrations = await _dbContext.Registrations
+                .Where(x => x.EventId == evt.Id)
+                .ProjectTo<RegistrationModel>()
+                .ToListAsync();
+
+            var registeredUserIds = model.Registrations.Select(x => x.UserId).Distinct();
+            model.RegisteredUsers = await _dbContext.Users
+                .Where(x => registeredUserIds.Contains(x.Id))
+                .OrderBy(x => x.LastName)
+                .ThenBy(x => x.FirstName)
+                .ProjectTo<UserModel>()
+                .ToListAsync();
+
+            return View(model);
         }
         
         [HttpGet("partial")]

@@ -9,6 +9,9 @@ namespace EventHost.Web.Models.Registrations
         public int EventId { get; set; }
         public string EventName { get; set; }
 
+        public int SectionId { get; set; }
+        public string SectionName { get; set; }
+
         public int SessionId { get; set; }
         public string SessionName { get; set; }
 
