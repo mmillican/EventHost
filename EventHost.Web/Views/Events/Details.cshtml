@@ -7,14 +7,15 @@
     ViewData["Subtitle"] = $"{Model.Event.StartOn:ddd, MMM dd} - {Model.Event.EndOn:ddd, MMM dd, yyyy}";
 }
 
-@if (Model.UserCanEdit)
-{
-    <div class="actions">
+<div class="actions">
+    @if (Model.UserCanEdit)
+    {
         <a asp-action="Edit" asp-route-id="@Model.Event.Id" class="btn btn-default">Edit event</a>
-        <a asp-action="Create" asp-controller="Sections" asp-route-eventId="@Model.Event.Id" class="btn btn-success">New section</a>
-        <a asp-action="EventRegistrations" asp-controller="Registrations" asp-route-eventId="@Model.Event.Id" class="btn btn-default">View registrations</a>
-    </div>
-}
+        <a asp-action="EventRegistrations" asp-controller="Registrations" asp-route-eventId="@Model.Event.Id" class="btn btn-link" title="View all registrations for this event">View registrations</a>
+    }
+    
+    <a asp-action="EventUserRegistrations" asp-controller="Registrations" asp-route-eventId="@Model.Event.Id" asp-route-userId="@Model.CurrentUserId" class="btn btn-link">My registrations</a>
+</div>
 
 <div class="event-description">
     @Html.Raw(WebUtility.HtmlDecode(Model.Event.Description))
@@ -43,6 +44,10 @@
 </p>
 
 <hr />
+<div class="actions">
+    <a asp-action="Create" asp-controller="Sections" asp-route-eventId="@Model.Event.Id" class="btn btn-success">New time section</a>
+</div>
+
 <div class="sections">
     @foreach (var sec in Model.Sections)
     {

@@ -21,6 +21,7 @@ namespace EventHost.Web.Mappers
             //CreateMap<Registration, EditRegistrationViewModel>();
             CreateMap<Registration, RegistrationModel>()
                 .ForMember(x => x.SectionId, opt => opt.MapFrom(x => x.Session.SectionId))
+                .ForMember(x => x.SectionName, opt => opt.MapFrom(x => x.Session.Section.Name))
                 .ForMember(x => x.UserName, opt => opt.MapFrom(x => $"{x.User.FirstName} {x.User.LastName}"))
                 .ForMember(x => x.UserEmail, opt => opt.MapFrom(x => x.User.Email));
         }
