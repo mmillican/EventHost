@@ -18,6 +18,7 @@ using AutoMapper;
 using EventHost.Web.Models.Sessions;
 using EventHost.Web.Models.Sections;
 using EventHost.Web.Models.Users;
+using Newtonsoft.Json;
 
 namespace EventHost.Web.Controllers
 {
@@ -118,6 +119,8 @@ namespace EventHost.Web.Controllers
                 .Where(x => userSessionIds.Contains(x.Id))
                 .ProjectTo<SessionModel>()
                 .ToListAsync();
+
+            model.SerializedSessions = JsonConvert.SerializeObject(model.RegisteredSessions);
 
             return View(model);
         }

@@ -17,5 +17,7 @@ namespace EventHost.Web.Models.Registrations
         public List<SectionModel> Sections { get; set; }
 
         public List<SessionModel> RegisteredSessions { get; set; }
+
+        public string SerializedSessions { get; set; }
     }
 }
