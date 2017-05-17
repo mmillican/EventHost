@@ -2,6 +2,22 @@
 @{
     ViewData["Title"] = $"{Model.Event.Name} Itinerary";
     ViewData["Subtitle"] = $"{Model.User.FirstName} {Model.User.LastName}";
+
+    var sessionIdx = 0;
+}
+
+@functions
+{
+    public char GetSessionAlphaChar(int idx)
+    {
+        if (idx > 25)
+            idx = idx - 25;
+
+        var alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        var alphaArray = alpha.ToCharArray();
+        var letter = alphaArray[idx];
+        return letter;
+    }
 }
 
 <div class="actions">
@@ -12,6 +28,7 @@
 <div class="row">
     <div class="col-md-5">
         <div class="sections">
+
             @foreach (var sec in Model.Sections)
             {
                 <div class="section">
@@ -23,14 +40,17 @@
                     <div class="session-info">
                         @{
                             var session = Model.RegisteredSessions.SingleOrDefault(x => x.SectionId == sec.Id);
-                        }
+                         }
                         @if (session == null)
                         {
                             <h4><em>You are not registered for this section.</em></h4>
                         }
                         else
                         {
-                            <h4>@session.Name</h4>
+                            <h4>
+                                <img class="pull-right" src="@($"https://maps.google.com/mapfiles/marker{GetSessionAlphaChar(sessionIdx)}.png")" />
+                                @session.Name
+                            </h4>
 
                             <address>
                                 <strong>@session.HostName</strong><br />
@@ -40,6 +60,8 @@
                         }
                     </div>
                 </div>
+
+                sessionIdx++;
             }
         </div>
     </div>
@@ -92,27 +114,32 @@
 
             var sessions = @Html.Raw(Model.SerializedSessions);
 
+            var sessionIdx = 0;
             _.each(sessions, function (session) {
                 var address = session.Address + ', ' + session.City + ', ' + session.State + ' ' + session.PostalCode;
                 geocoder.geocode({ address: address }, function (results, status) {
                     if (status == google.maps.GeocoderStatus.OK) {
                         var loc = results[0].geometry.location;
 
-                        createMapMarker(loc, session);
+                        createMapMarker(loc, session, sessionIdx);
+                        sessionIdx++;
                     }
                 });
 
             })
         }
 
-        function createMapMarker(center, session) {
+        function createMapMarker(center, session, idx) {
             var html = '<strong>' + session.Name + '</strong><br /><br />';
             html += session.HostName + '<br />';
             html += session.Address + '<br />' + session.City + ', ' + session.State + ' ' + session.PostalCode + '<br /><br />';
 
+            var locAlphaLetter = getAlphaLetterByIndex(idx);
+
             var marker = new google.maps.Marker({
                 map: map,
-                position: center
+                position: center,
+                label: locAlphaLetter
             });
 
             google.maps.event.addListener(marker, 'click', function () {
@@ -120,6 +147,12 @@
                 infoWindow.open(map, marker);
             });
             markers.push(marker);
+        }
+
+        function getAlphaLetterByIndex(idx) {
+            var alpha = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            var letter = alpha.charAt(idx);
+            return letter;
         }
     </script>
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCxQV-xDIjq7XWVA59LusPyGHu-GeA_wDY&callback=initMap"></script>
