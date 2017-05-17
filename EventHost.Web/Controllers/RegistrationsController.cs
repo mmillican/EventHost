@@ -72,59 +72,7 @@ namespace EventHost.Web.Controllers
 
             return View(model);
         }
-
-        [HttpGet("~/events/{eventId}/registrations/user/{userId}")]
-        public async Task<IActionResult> EventUserRegistrations(int eventId, int userId)
-        {
-            var evt = await _dbContext.Events.FindAsync(eventId);
-            if (evt == null)
-            {
-                return NotFound();
-            }
-
-            var currentUser = await _userManager.GetUserAsync(User);
-            if (evt.OwnerUserId != currentUser.Id && userId != currentUser.Id)
-            {
-                return NotFound();
-            }
-
-            UserModel viewingUser = null;
-            if (currentUser.Id != userId)
-            {
-                var user = await _dbContext.Users.FindAsync(userId);
-                if (user != null)
-                    viewingUser = user.ToModel();
-            }
-            else
-            {
-                viewingUser = currentUser.ToModel();
-            }
-
-            var model = new EventUserRegistrationsViewModel();
-            model.Event = evt.ToModel();
-            model.User = viewingUser;
-
-            model.Sections = await _dbContext.Sections
-                .Where(x => x.EventId == evt.Id)
-                .OrderBy(x => x.StartOn)
-                .ProjectTo<SectionModel>()
-                .ToListAsync();
-
-            var userSessionIds = await _dbContext.Registrations
-                .Where(x => x.EventId == eventId
-                    && x.UserId == userId)
-                .Select(x => x.SessionId)
-                .ToListAsync();
-            model.RegisteredSessions = await _dbContext.Sessions
-                .Where(x => userSessionIds.Contains(x.Id))
-                .ProjectTo<SessionModel>()
-                .ToListAsync();
-
-            model.SerializedSessions = JsonConvert.SerializeObject(model.RegisteredSessions);
-
-            return View(model);
-        }
-        
+                
         [HttpGet("partial")]
         public async Task<IActionResult> SessionRegistrations(int sessionId)
         {

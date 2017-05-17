@@ -2,14 +2,11 @@
 using EventHost.Web.Models.Sections;
 using EventHost.Web.Models.Sessions;
 using EventHost.Web.Models.Users;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace EventHost.Web.Models.Registrations
+namespace EventHost.Web.Models.Itinerary
 {
-    public class EventUserRegistrationsViewModel
+    public class EventItineraryViewModel
     {
         public EventModel Event { get; set; }
         public UserModel User { get; set; }

@@ -14,7 +14,7 @@
         <a asp-action="EventRegistrations" asp-controller="Registrations" asp-route-eventId="@Model.Event.Id" class="btn btn-link" title="View all registrations for this event">View registrations</a>
     }
     
-    <a asp-action="EventUserRegistrations" asp-controller="Registrations" asp-route-eventId="@Model.Event.Id" asp-route-userId="@Model.CurrentUserId" class="btn btn-link">My registrations</a>
+    <a asp-action="EventItinerary" asp-controller="Itinerary" asp-route-eventId="@Model.Event.Id" class="btn btn-link">My itinerary</a>
 </div>
 
 <div class="event-description">

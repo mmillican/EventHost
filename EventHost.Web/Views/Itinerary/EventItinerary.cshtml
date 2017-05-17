@@ -1,11 +1,12 @@
-﻿@model EventHost.Web.Models.Registrations.EventUserRegistrationsViewModel
+﻿@model EventHost.Web.Models.Itinerary.EventItineraryViewModel
 @{
-    ViewData["Title"] = $"{Model.Event.Name} registrations";
+    ViewData["Title"] = $"{Model.Event.Name} Itinerary";
     ViewData["Subtitle"] = $"{Model.User.FirstName} {Model.User.LastName}";
 }
 
 <div class="actions">
     <a asp-action="Details" asp-controller="Events" asp-route-id="@Model.Event.Id" class="btn btn-default">&laquo; Back to event</a>
+    <a href="#" id="btn-email-registrations" class="btn btn-default" title="Send yourself an email with your itinerary">Email my itinerary</a>
 </div>
 
 <div class="row">
@@ -24,7 +25,7 @@
                             var session = Model.RegisteredSessions.SingleOrDefault(x => x.SectionId == sec.Id);
                         }
                         @if (session == null)
-                {
+                        {
                             <h4><em>You are not registered for this section.</em></h4>
                         }
                         else
@@ -47,11 +48,30 @@
     </div>
 </div>
 
+<div id="email-registrations-modal" class="modal fade" role="dialog" tabindex="-1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form id="email-registrations-form">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="exampleModalLabel">Send registrations</h4>
+                </div>
+                <div class="modal-body">
+                    Send your registrations to your email for future reference.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Send</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 @section scripts
 {
     <script>
         $(document).ready(function () {
-            
         });
 
         var map;
