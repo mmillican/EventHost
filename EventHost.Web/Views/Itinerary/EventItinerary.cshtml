@@ -94,6 +94,26 @@
 {
     <script>
         $(document).ready(function () {
+            $('#btn-email-registrations').on('click', function (e) {
+                e.preventDefault();
+
+                var $btn = $(this);
+                $btn.attr('disabled', 'disabled');
+
+                $.ajax({
+                    url: '@Url.Action("EmailItinerary", new { eventId = Model.Event.Id})',
+                    type: 'POST',
+                    success: function () {
+                        host.alerts.addSuccess('Your email itinerary is on its way!');
+                        $btn.removeAttr('disabled');
+                    },
+                    error: function () {
+                        host.alerts.addError('There was an error sending your itinerary.  Please try again.');
+                        $btn.removeAttr('disabled');
+
+                    }
+                });
+            });
         });
 
         var map;

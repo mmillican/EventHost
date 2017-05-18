@@ -16,6 +16,8 @@ using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using EventHost.Web.Models.Sessions;
 using Newtonsoft.Json;
+using EventHost.Web.Services;
+using System.Net;
 
 namespace EventHost.Web.Controllers
 {
@@ -24,18 +26,23 @@ namespace EventHost.Web.Controllers
     {
         private readonly EventsDbContext _dbContext;
         private readonly UserManager<User> _userManager;
+        private readonly IViewRenderer _viewRenderer;
+        private readonly IEmailSender _emailSender;
         private readonly ILogger _logger;
 
         public ItineraryController(EventsDbContext dbContext,
             UserManager<User> userManager,
+            IViewRenderer viewRenderer,
+            IEmailSender emailSender,
             ILoggerFactory loggerFactory)
         {
             _dbContext = dbContext;
             _userManager = userManager;
+            _viewRenderer = viewRenderer;
+            _emailSender = emailSender;
             _logger = loggerFactory.CreateLogger<ItineraryController>();
         }
-
-
+        
         [HttpGet("~/events/{eventId}/itinerary")]
         public async Task<IActionResult> EventItinerary(int eventId, int? userId = null)
         {
@@ -76,6 +83,57 @@ namespace EventHost.Web.Controllers
             model.SerializedSessions = JsonConvert.SerializeObject(model.RegisteredSessions);
 
             return View(model);
+        }
+
+        [HttpPost("~/events/{eventId}/itinerary/email")]
+        public async Task<IActionResult> EmailItinerary(int eventId)
+        {
+            var evt = await _dbContext.Events.FindAsync(eventId);
+            if (evt == null)
+            {
+                return NotFound();
+            }
+
+            var user = await _userManager.GetUserAsync(User);
+
+            try
+            {
+                var model = new EventItineraryEmailModel();
+                model.Event = evt.ToModel();
+                model.User = user.ToModel();
+
+                model.Sections = await _dbContext.Sections
+                    .Where(x => x.EventId == evt.Id)
+                    .OrderBy(x => x.StartOn)
+                    .ProjectTo<SectionModel>()
+                    .ToListAsync();
+
+                var userSessionIds = await _dbContext.Registrations
+                    .Where(x => x.EventId == eventId
+                        && x.UserId == user.Id)
+                    .Select(x => x.SessionId)
+                    .ToListAsync();
+                model.RegisteredSessions = await _dbContext.Sessions
+                    .Where(x => userSessionIds.Contains(x.Id))
+                    .ProjectTo<SessionModel>()
+                    .ToListAsync();
+
+                model.ItineraryUrl = Url.Action("EventItinerary", "Itinerary", new { eventId }, Request.Scheme);
+                model.EventUrl = Url.Action("Details", "Events", new { id = eventId }, Request.Scheme);
+
+                var subject = $"Your {evt.Name} itinerary";
+                var body = await _viewRenderer.RenderViewToStringAsync("Itinerary/ItineraryEmail", model);
+
+                await _emailSender.SendEmailAsync(user.Email, subject, body);
+
+                return Json(null);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(0, ex, $"Error sending itinerary email to '{user.Email}' for event '{evt.Name}'");
+
+                return StatusCode((int)HttpStatusCode.InternalServerError, "Error sending itinerary email");
+            }
         }
     }
 }

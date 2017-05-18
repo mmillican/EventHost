@@ -17,4 +17,10 @@ namespace EventHost.Web.Models.Itinerary
 
         public string SerializedSessions { get; set; }
     }
+
+    public class EventItineraryEmailModel : EventItineraryViewModel
+    {
+        public string EventUrl { get; set; }
+        public string ItineraryUrl { get; set; }
+    }
 }

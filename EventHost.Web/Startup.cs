@@ -15,6 +15,7 @@ using EventHost.Web.Services;
 using EventHost.Web.Entities.Users;
 using System.Reflection;
 using AutoMapper;
+using EventHost.Web.Configuration;
 
 namespace EventHost.Web
 {
@@ -61,6 +62,8 @@ namespace EventHost.Web
                 .AddEntityFrameworkStores<EventsDbContext, int>()
                 .AddDefaultTokenProviders();
 
+            services.Configure<EmailConfig>(Configuration.GetSection("email")); 
+
             var appAssembly = typeof(Startup).GetTypeInfo().Assembly;
             services.AddAutoMapper(appAssembly);
 
@@ -69,8 +72,9 @@ namespace EventHost.Web
             services.AddMvc();
 
             // Add application services.
-            services.AddTransient<IEmailSender, AuthMessageSender>();
+            services.AddTransient<IEmailSender, EmailSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
+            services.AddTransient<IViewRenderer, ViewRenderer>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
