@@ -43,13 +43,26 @@
             </div>
         </div>
     </nav>
-    <div class="container body-content">
-        <div class="page-header">
-            <h1>
-                @ViewData["Title"]
-                <small>@ViewData["Subtitle"]</small>
-            </h1>
+
+    @if (IsSectionDefined("hero"))
+    {
+        <div class="jumbotron hero">
+            <div class="container">
+                @RenderSection("hero", false)
+            </div>
         </div>
+    }
+
+    <div class="container body-content">
+        @if (!IsSectionDefined("hero") && ViewData["Title"] != null)
+        {
+            <div class="page-header">
+                <h1>
+                    @ViewData["Title"]
+                    <small>@ViewData["Subtitle"]</small>
+                </h1>
+            </div>
+        }
 
         <div class="alerts"></div>
 

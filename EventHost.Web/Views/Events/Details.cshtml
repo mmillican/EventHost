@@ -4,17 +4,38 @@
 
 @{
     ViewData["Title"] = Model.Event.Name;
-    ViewData["Subtitle"] = $"{Model.Event.StartOn:ddd, MMM dd} - {Model.Event.EndOn:ddd, MMM dd, yyyy}";
+}
+
+@section hero
+{
+    <div class="text-center">
+        <h1>
+            @Model.Event.Name            
+        </h1>
+        <h3>
+            @($"{Model.Event.StartOn:ddd, MMM dd} - {Model.Event.EndOn:ddd, MMM dd, yyyy}")
+        </h3>
+    </div>    
 }
 
 <div class="actions">
     @if (Model.UserCanEdit)
     {
-        <a asp-action="Edit" asp-route-id="@Model.Event.Id" class="btn btn-default">Edit event</a>
-        <a asp-action="EventRegistrations" asp-controller="Registrations" asp-route-eventId="@Model.Event.Id" class="btn btn-link" title="View all registrations for this event">View registrations</a>
+        <div class="btn-group btn-group-admin-options pull-right">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Admin <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+                <li><a asp-action="EventRegistrations" asp-controller="Registrations" asp-route-eventId="@Model.Event.Id" title="View all registrations for this event">View registrations</a></li>
+                <li role="separator" class="divider"></li>
+                <li><a asp-action="Create" asp-controller="Sections" asp-route-eventId="@Model.Event.Id">New time section</a></li>
+                <li><a asp-action="Create" asp-controller="Sessions" asp-route-eventId="@Model.Event.Id">New session</a></li>
+                <li><a asp-action="Edit" asp-route-id="@Model.Event.Id">Edit event</a></li>
+            </ul>
+        </div>        
     }
     
-    <a asp-action="EventItinerary" asp-controller="Itinerary" asp-route-eventId="@Model.Event.Id" class="btn btn-link">My itinerary</a>
+    <a asp-action="EventItinerary" asp-controller="Itinerary" asp-route-eventId="@Model.Event.Id" class="btn btn-info"><span class="glyphicon glyphicon-list-alt"></span> My itinerary</a>
 </div>
 
 <div class="event-description">
@@ -44,9 +65,6 @@
 </p>
 
 <hr />
-<div class="actions">
-    <a asp-action="Create" asp-controller="Sections" asp-route-eventId="@Model.Event.Id" class="btn btn-success">New time section</a>
-</div>
 
 <div class="sections">
     @foreach (var sec in Model.Sections)
@@ -58,12 +76,9 @@
                 <small>
                     @($"{sec.StartOn:ddd, h:mm tt} - {sec.EndOn:ddd, h:mm tt}")
                     <a asp-action="Edit" asp-controller="Sections" asp-route-eventId="@Model.Event.Id" asp-route-id="@sec.Id" style="margin-left: 10px;">Edit</a>
+                    <a asp-action="Create" asp-controller="Sessions" asp-route-eventId="@Model.Event.Id" asp-route-sectionId="@sec.Id" style="margin-left: 10px;">New session</a>
                 </small>
             </h3>
-
-            <div class="actions">
-                <a asp-action="Create" asp-controller="Sessions" asp-route-eventId="@Model.Event.Id" asp-route-sectionId="@sec.Id" class="btn btn-success">New session</a>
-            </div>
 
             <div class="sessions">
                 @foreach (var session in Model.Sessions.Where(x => x.SectionId == sec.Id))
