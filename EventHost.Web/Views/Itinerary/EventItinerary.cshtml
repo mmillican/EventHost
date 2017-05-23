@@ -21,7 +21,7 @@
 }
 
 <div class="actions">
-    <a asp-action="Details" asp-controller="Events" asp-route-id="@Model.Event.Id" class="btn btn-default">&laquo; Back to event</a>
+    <a asp-action="Details" asp-controller="Events" asp-route-slug="@Model.Event.Slug" class="btn btn-default">&laquo; Back to event</a>
     <a href="#" id="btn-email-registrations" class="btn btn-default" title="Send yourself an email with your itinerary">Email my itinerary</a>
 </div>
 

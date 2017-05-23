@@ -15,6 +15,7 @@ using EventHost.Web.Models.Sections;
 using System.Linq;
 using EventHost.Web.Models.Sessions;
 using EventHost.Web.Models.Registrations;
+using EventHost.Web.Helpers;
 
 namespace EventHost.Web.Controllers
 {
@@ -56,10 +57,10 @@ namespace EventHost.Web.Controllers
             return View(model);
         }
 
-        [HttpGet("{id:int}")]
-        public async Task<IActionResult> Details(int id)
+        [HttpGet("{slug}")]
+        public async Task<IActionResult> Details(string slug)
         {
-            var evt = await _dbContext.Events.FindAsync(id);
+            var evt = await _dbContext.Events.SingleOrDefaultAsync(x => x.Slug == slug);
             if (evt == null)
             {
                 // TODO: Diplay error
@@ -123,10 +124,12 @@ namespace EventHost.Web.Controllers
                     Owner = currentUser
                 };
 
+                evt.Slug = await GenerateEventSlug(evt);
+
                 _dbContext.Events.Add(evt);
                 await _dbContext.SaveChangesAsync();
 
-                return RedirectToAction(nameof(Details), new { id = evt.Id });
+                return RedirectToAction(nameof(Details), new { slug = evt.Slug });
             }
             catch(Exception ex)
             {
@@ -178,9 +181,12 @@ namespace EventHost.Web.Controllers
                 evt.EnableWaitLists = model.EnableWaitLists;
                 evt.EnableAutomaticApproval = model.EnableAutomaticApproval;
 
+                if (string.IsNullOrEmpty(evt.Slug))
+                    evt.Slug = await GenerateEventSlug(evt);
+
                 await _dbContext.SaveChangesAsync();
 
-                return RedirectToAction(nameof(Details), new { id = evt.Id });
+                return RedirectToAction(nameof(Details), new { slug = evt.Slug });
             }
             catch (Exception ex)
             {
@@ -189,6 +195,52 @@ namespace EventHost.Web.Controllers
                 ModelState.AddModelError("", "There was an error updating the event.  Try again.");
                 return View(model);
             }
+        }
+
+        public async Task<string> GenerateEventSlug(Event evt)
+        {
+            if (string.IsNullOrEmpty(evt.Name))
+            {
+                throw new Exception("Event name must have a value");
+            }
+
+            try
+            {
+                var slug = $"{evt.StartOn:yyyy-MM-dd}-{evt.Name.Clean()}";
+                if (!await DoesSlugExist(slug, evt.Id))
+                {
+                    return slug;
+                }
+
+                var appendIdx = 1;
+                var modSlug = $"{slug}-{appendIdx})";
+                while (await DoesSlugExist(modSlug, evt.Id))
+                {
+                    appendIdx++;
+                    modSlug = $"{slug}-{appendIdx})";
+                }
+
+                return modSlug;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Could not generate slug for event ID {evt.Id} ({evt.Name})");
+            }
+        }
+
+        private async Task<bool> DoesSlugExist(string slug, int eventId)
+        {
+            bool exists;
+            if (eventId != 0)
+            {
+                exists = await _dbContext.Events.AnyAsync(x => x.Id != eventId && x.Slug == slug);
+            }
+            else
+            {
+                exists = await _dbContext.Events.AnyAsync(x => x.Slug == slug);
+            }
+
+            return exists;
         }
     }
 }

@@ -30,6 +30,9 @@ namespace EventHost.Web.Entities.Events
         [ForeignKey("OwnerUserId")]
         public virtual User Owner { get; set; }
 
+        [MaxLength(500)]
+        public string Slug { get; set; }
+
         public virtual IList<Section> Sections { get; set; } = new List<Section>();
         public virtual IList<Session> Sessions { get; set; } = new List<Session>();
     }

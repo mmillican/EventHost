@@ -21,5 +21,7 @@ namespace EventHost.Web.Models.Events
 
         public int OwnerUserId { get; set; }
         public string OwnerName { get; set; }
+
+        public string Slug { get; set; }
     }
 }

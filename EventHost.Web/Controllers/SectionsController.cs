@@ -89,7 +89,7 @@ namespace EventHost.Web.Controllers
                 _dbContext.Sections.Add(section);
                 await _dbContext.SaveChangesAsync();
 
-                return RedirectToAction("Details", "Events", new { id = evt.Id });
+                return RedirectToAction("Details", "Events", new { slug = evt.Slug });
             }
             catch (Exception ex)
             {
@@ -113,7 +113,7 @@ namespace EventHost.Web.Controllers
             var section = await _dbContext.Sections.FindAsync(id);
             if (section == null || section.EventId != eventId)
             {
-                return RedirectToAction("Details", "Events", new { id = eventId });
+                return RedirectToAction("Details", "Events", new { slug = evt.Slug });
             }
 
             var model = section.ToEditModel();
@@ -134,7 +134,7 @@ namespace EventHost.Web.Controllers
             var section = await _dbContext.Sections.FindAsync(id);
             if (section == null || section.EventId != eventId)
             {
-                return RedirectToAction("Details", "Events", new { id = eventId });
+                return RedirectToAction("Details", "Events", new { slug = evt.Slug });
             }
 
             if (model.StartOn < evt.StartOn || model.StartOn > evt.EndOn)
@@ -161,7 +161,7 @@ namespace EventHost.Web.Controllers
 
                 await _dbContext.SaveChangesAsync();
 
-                return RedirectToAction("Details", "Events", new { id = evt.Id });
+                return RedirectToAction("Details", "Events", new { slug = evt.Slug });
             }
             catch (Exception ex)
             {

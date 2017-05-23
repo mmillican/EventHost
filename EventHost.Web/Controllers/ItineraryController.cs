@@ -119,7 +119,7 @@ namespace EventHost.Web.Controllers
                     .ToListAsync();
 
                 model.ItineraryUrl = Url.Action("EventItinerary", "Itinerary", new { eventId }, Request.Scheme);
-                model.EventUrl = Url.Action("Details", "Events", new { id = eventId }, Request.Scheme);
+                model.EventUrl = Url.Action("Details", "Events", new { slug = evt.Slug }, Request.Scheme);
 
                 var subject = $"Your {evt.Name} itinerary";
                 var body = await _viewRenderer.RenderViewToStringAsync("Itinerary/ItineraryEmail", model);

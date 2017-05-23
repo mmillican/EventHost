@@ -110,7 +110,7 @@ namespace EventHost.Web.Controllers
                 _dbContext.Sessions.Add(session);
                 await _dbContext.SaveChangesAsync();
 
-                return RedirectToAction("Details", "Events", new { id = evt.Id });
+                return RedirectToAction("Details", "Events", new { slug = evt.Slug });
             }
             catch (Exception ex)
             {
@@ -134,7 +134,7 @@ namespace EventHost.Web.Controllers
             var session = await _dbContext.Sessions.FindAsync(id);
             if (session == null || session.EventId != eventId)
             {
-                return RedirectToAction("Details", "Events", new { id = eventId });
+                return RedirectToAction("Details", "Events", new { slug = evt.Slug });
             }
 
             var model = session.ToEditModel();
@@ -160,7 +160,7 @@ namespace EventHost.Web.Controllers
             var session = await _dbContext.Sessions.FindAsync(id);
             if (session == null || session.EventId != eventId)
             {
-                return RedirectToAction("Details", "Events", new { id = eventId });
+                return RedirectToAction("Details", "Events", new { slug = evt.Slug });
             }
 
             if (!ModelState.IsValid)
@@ -198,7 +198,7 @@ namespace EventHost.Web.Controllers
 
                 await _dbContext.SaveChangesAsync();
 
-                return RedirectToAction("Details", "Events", new { id = evt.Id });
+                return RedirectToAction("Details", "Events", new { slug = evt.Slug });
             }
             catch (Exception ex)
             {
