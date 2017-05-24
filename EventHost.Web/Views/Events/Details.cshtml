@@ -104,7 +104,8 @@
                                             Registrations = Model.Registrations.Where(x => x.SessionId == session.Id),
                                             CurrentUserIsRegistered = Model.Registrations.Where(x => x.SessionId == session.Id).Select(x=> x.UserId).Contains(Model.CurrentUserId),
                                             RequiresApproval = !Model.Event.EnableAutomaticApproval,
-                                            UserCanManageRegistrations = Model.CurrentUserId == Model.Event.OwnerUserId
+                                            UserCanManageRegistrations = Model.CurrentUserId == Model.Event.OwnerUserId,
+                                            RegistrationIsOpen = Model.Event.IsEventRegistrationOpen(DateTime.UtcNow)
                                         })
                                 </div>
                                 <div class="col-md-9 session-description">

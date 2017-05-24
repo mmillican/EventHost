@@ -19,6 +19,7 @@ using EventHost.Web.Models.Sessions;
 using EventHost.Web.Models.Sections;
 using EventHost.Web.Models.Users;
 using Newtonsoft.Json;
+using EventHost.Web.Helpers;
 
 namespace EventHost.Web.Controllers
 {
@@ -94,7 +95,8 @@ namespace EventHost.Web.Controllers
             {
                 Session = Mapper.Map<SessionModel>(session),
                 UserCanManageRegistrations = currentUser.Id == evt.OwnerUserId,
-                RequiresApproval = !evt.EnableAutomaticApproval
+                RequiresApproval = !evt.EnableAutomaticApproval,
+                RegistrationIsOpen = evt.IsEventRegistrationOpen(DateTime.UtcNow)
             };
 
             model.Registrations = await _dbContext.Registrations

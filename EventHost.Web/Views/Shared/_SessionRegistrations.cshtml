@@ -12,22 +12,25 @@
                 @($"{availableSpots} of {Model.Session.MaxSpots} spots available")
             </strong>
         </div>
-        <div class="actions">
-            @if (!Model.CurrentUserIsRegistered)
-            {
-                <button type="button" class="btn btn-success btn-register-session" data-toggle="modal" data-target="#register-modal" data-session-id="@Model.Session.Id">
-                    Register
-                </button>
-            }
-            else
-            {
-                <strong>
-                    You are registered for this session.
-                    <a href="#" class="btn-unregister"><span class="text-danger">Cancel</span></a>
-                </strong>
+        @if (Model.RegistrationIsOpen)
+        {
+            <div class="actions">
+                @if (!Model.CurrentUserIsRegistered)
+                {
+                    <button type="button" class="btn btn-success btn-register-session" data-toggle="modal" data-target="#register-modal" data-session-id="@Model.Session.Id">
+                        Register
+                    </button>
+                }
+                else
+                {
+                    <strong>
+                        You are registered for this session.
+                        <a href="#" class="btn-unregister"><span class="text-danger">Cancel</span></a>
+                    </strong>
 
-            }
-        </div>
+                }
+            </div>
+        }
     }
     else
     {

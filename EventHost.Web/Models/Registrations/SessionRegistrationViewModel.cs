@@ -12,5 +12,7 @@ namespace EventHost.Web.Models.Registrations
 
         public bool RequiresApproval { get; set; }
         public bool UserCanManageRegistrations { get; set; }
+
+        public bool RegistrationIsOpen { get; set; }
     }
 }

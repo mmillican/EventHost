@@ -74,10 +74,7 @@ namespace EventHost.Web.Controllers
             model.CurrentUserId = currentUser.Id;
 
             model.UserCanEdit = evt.OwnerUserId == currentUser.Id;
-            model.RegistrationIsOpen = (!evt.RegistrationStartOn.HasValue
-                || evt.RegistrationStartOn.Value <= DateTime.Now)
-                && (!evt.RegistrationEndOn.HasValue
-                || evt.RegistrationEndOn.Value > DateTime.Now);
+            model.RegistrationIsOpen = evt.IsEventRegistrationOpen(DateTime.UtcNow);
 
             model.Sections = await _dbContext.Sections
                 .Where(x => x.EventId == evt.Id)
