@@ -74,10 +74,13 @@
                 <a id="section-@sec.Id"></a>
                 @sec.Name
                 <small>
-                    @($"{sec.StartOn:ddd, h:mm tt} - {sec.EndOn:ddd, h:mm tt}")
-                    <a asp-action="Edit" asp-controller="Sections" asp-route-eventId="@Model.Event.Id" asp-route-id="@sec.Id" style="margin-left: 10px;">Edit</a>
-                    <a asp-action="Create" asp-controller="Sessions" asp-route-eventId="@Model.Event.Id" asp-route-sectionId="@sec.Id" style="margin-left: 10px;">New session</a>
+                    @($"{sec.StartOn:ddd, h:mm tt} - {sec.EndOn:ddd, h:mm tt}")                    
                 </small>
+
+                <div class="pull-right">
+                    <a asp-action="Edit" asp-controller="Sections" asp-route-eventId="@Model.Event.Id" asp-route-id="@sec.Id" class="btn btn-sm btn-default" style="margin-left: 10px;">Edit</a>
+                    <a asp-action="Create" asp-controller="Sessions" asp-route-eventId="@Model.Event.Id" asp-route-sectionId="@sec.Id" class="btn btn-sm btn-success" style="margin-left: 10px;">New session</a>
+                </div>
             </h3>
 
             <div class="sessions">
@@ -86,10 +89,10 @@
                     <div class="panel panel-default session" data-session-id="@session.Id" data-session-name="@session.Name">
                         <div class="panel-heading">
                             <a id="session-@session.Id"></a>
-                            <strong>@session.Name</strong>
-                            <span class="pull-right">
-                                Hosted by @session.HostName
-                                <a asp-action="Edit" asp-controller="Sessions" asp-route-eventId="@Model.Event.Id" asp-route-id="@session.Id" style="margin-left: 10px;">Edit</a>
+                            <strong>@session.Name</strong>, 
+                            <em>hosted by @session.HostName</em>
+                            <span class="pull-right">                                
+                                <a asp-action="Edit" asp-controller="Sessions" asp-route-eventId="@Model.Event.Id" asp-route-id="@session.Id" class="btn btn-sm btn-default">Edit</a>
                             </span>
                         </div>
                         <div class="panel-body">

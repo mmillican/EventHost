@@ -52,3 +52,5 @@ textarea {
         display: none;
     }
 }
+
+.session-reg-list ol li { margin-bottom: 5px; }
