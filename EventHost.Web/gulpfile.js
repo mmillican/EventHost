@@ -1,4 +1,5 @@
-﻿"use strict";
+﻿/// <binding ProjectOpened='default' />
+"use strict";
 
 var gulp = require("gulp"),
     concat = require("gulp-concat"),
@@ -76,17 +77,7 @@ gulp.task("clean", function () {
 });
 
 gulp.task("watch", function () {
-    getBundles(regex.js).forEach(function (bundle) {
-        gulp.watch(bundle.inputFiles, ["min:js"]);
-    });
-
-    getBundles(regex.css).forEach(function (bundle) {
-        gulp.watch(bundle.inputFiles, ["min:css"]);
-    });
-
-    getBundles(regex.html).forEach(function (bundle) {
-        gulp.watch(bundle.inputFiles, ["min:html"]);
-    });
+   gulp.watch(paths.sassSrc + '/**/*.scss', ["compile:css"]);
 });
 
 function getBundles(regexPattern) {
@@ -94,3 +85,5 @@ function getBundles(regexPattern) {
         return regexPattern.test(bundle.outputFileName);
     });
 }
+
+gulp.task("default", ["watch"]);
