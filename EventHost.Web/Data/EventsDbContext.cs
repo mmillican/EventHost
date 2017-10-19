@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using EventHost.Web.Entities.Users;
 using EventHost.Web.Entities.Events;
+using Microsoft.AspNetCore.Identity;
 
 namespace EventHost.Web.Data
 {
@@ -20,14 +21,50 @@ namespace EventHost.Web.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+            builder.Entity<User>(b =>
+            {
+                b.ToTable("Users");
 
-            builder.Entity<User>().ForSqlServerToTable("Users");
-            builder.Entity<Role>().ForSqlServerToTable("Roles");
-            builder.Entity<IdentityUserRole<int>>().ForSqlServerToTable("UserRoles");
-            builder.Entity<IdentityUserLogin<int>>().ForSqlServerToTable("UserLogins");
-            builder.Entity<IdentityUserClaim<int>>().ForSqlServerToTable("UserClaims");
-            builder.Entity<IdentityUserToken<int>>().ForSqlServerToTable("UserTokens");
-            builder.Entity<IdentityRoleClaim<int>>().ForSqlServerToTable("RoleClaims");
+                b.HasMany(e => e.Claims)
+                    .WithOne()
+                    .HasForeignKey(e => e.UserId)
+                    .IsRequired()
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                b.HasMany(e => e.Logins)
+                    .WithOne()
+                    .HasForeignKey(e => e.UserId)
+                    .IsRequired()
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                b.HasMany(e => e.Roles)
+                    .WithOne()
+                    .HasForeignKey(e => e.UserId)
+                    .IsRequired()
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            builder.Entity<Role>(b => {
+                b.ToTable("Roles");
+
+                b.HasMany(x => x.Users)
+                    .WithOne()
+                    .HasForeignKey(x => x.RoleId)
+                    .IsRequired()
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                b.HasMany(x => x.Claims)
+                    .WithOne()
+                    .HasForeignKey(x => x.RoleId)
+                    .IsRequired()
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            builder.Entity<IdentityUserRole<int>>().ToTable("UserRoles");
+            builder.Entity<IdentityUserLogin<int>>().ToTable("UserLogins");
+            builder.Entity<IdentityUserClaim<int>>().ToTable("UserClaims");
+            builder.Entity<IdentityUserToken<int>>().ToTable("UserTokens");
+            builder.Entity<IdentityRoleClaim<int>>().ToTable("RoleClaims");
         }
     }
 }
