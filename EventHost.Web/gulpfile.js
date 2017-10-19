@@ -7,7 +7,9 @@ var gulp = require("gulp"),
     uglify = require("gulp-uglify"),
     merge = require("merge-stream"),
     del = require("del"),
-    bundleconfig = require("./bundleconfig.json");
+    bundleconfig = require("./bundleconfig.json"),
+    sass = require('gulp-sass'),
+    prefix = require('gulp-autoprefixer');
 
 var regex = {
     css: /\.css$/,
@@ -15,7 +17,25 @@ var regex = {
     js: /\.js$/
 };
 
+var paths = {
+    cssSrc: 'wwwroot/css',
+    sassSrc: 'wwwroot/sass',
+    jsSrc: 'wwwroot/js',
+    cssDist: 'wwwroot/css/',
+    jsDist: 'wwwroot/js/',
+    imgSrc: 'wwwroot/images/'
+};
+
 gulp.task("min", ["min:js", "min:css", "min:html"]);
+
+gulp.task('compile:css', function () {
+    return gulp.src(paths.sassSrc + '/*.scss')
+        .pipe(sass({
+            //outputStyle: 'compressed'
+        })).on('error', sass.logError)
+        .pipe(prefix())
+        .pipe(gulp.dest(paths.cssDist))
+});
 
 gulp.task("min:js", function () {
     var tasks = getBundles(regex.js).map(function (bundle) {
