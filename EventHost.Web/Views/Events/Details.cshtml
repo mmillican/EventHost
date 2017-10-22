@@ -83,6 +83,13 @@
                 </div>
             </h3>
 
+            @if (!string.IsNullOrEmpty(sec.Description))
+            {
+                <div class="section-description">
+                    <p>@sec.Description</p>
+                </div>
+            }
+
             <div class="sessions">
                 @foreach (var session in Model.Sessions.Where(x => x.SectionId == sec.Id))
                 {
