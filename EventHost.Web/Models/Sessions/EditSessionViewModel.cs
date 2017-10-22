@@ -10,5 +10,7 @@ namespace EventHost.Web.Models.Sessions
         public IEnumerable<SelectListItem> SectionOptions { get; set; } = new List<SelectListItem>();
         [NotMapped]
         public IEnumerable<SelectListItem> UserOptions { get; set; } = new List<SelectListItem>();
+
+        public bool EnableWaitList { get; set; }
     }
 }

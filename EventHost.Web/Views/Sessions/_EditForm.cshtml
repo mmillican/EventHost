@@ -1,0 +1,84 @@
+﻿@model EventHost.Web.Models.Sessions.EditSessionViewModel
+        
+<div class="row">
+        <div class="col-md-6 form-group">
+            <label asp-for="Name"></label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+        <div class="col-md-6 form-group">
+            <label asp-for="SectionId"></label>
+            <select asp-for="SectionId" asp-items="Model.SectionOptions" class="form-control"></select>
+            <span asp-validation-for="SectionId" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 form-group">
+            <label asp-for="Description"></label>
+            <span class="text-muted">(This will be displayed on the event's page)</span>
+            <textarea asp-for="Description" class="form-control"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 form-group">
+            <label asp-for="HostUserId"></label>
+            <select asp-for="HostUserId" asp-items="Model.UserOptions" class="form-control"></select>
+            <span asp-validation-for="HostUserId" class="text-danger"></span>
+        </div>
+        <div class="col-md-6 form-group">
+            <!-- TODO: Add "other" user - free fill option-->
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 form-group">
+            <label asp-for="Address"></label>
+            <input asp-for="Address" class="form-control" />
+            <span asp-validation-for="Address" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4 form-group">
+            <label asp-for="City"></label>
+            <input asp-for="City" class="form-control" />
+            <span asp-validation-for="City" class="text-danger"></span>
+        </div>
+        <div class="col-md-4 form-group">
+            <label asp-for="State"></label>
+            <input asp-for="State" class="form-control" />
+            <span asp-validation-for="State" class="text-danger"></span>
+        </div>
+        <div class="col-md-4 form-group">
+            <label asp-for="PostalCode"></label>
+            <input asp-for="PostalCode" class="form-control" />
+            <span asp-validation-for="PostalCode" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4 form-group">
+            <label asp-for="MaxSpots"></label>
+            <input asp-for="MaxSpots" class="form-control" />
+            <span asp-validation-for="MaxSpots" class="text-danger"></span>
+        </div>
+        <div class="col-md-4 form-group">
+            <label asp-for="ReservedSpots"></label>
+            <input asp-for="ReservedSpots" class="form-control" />
+            <span asp-validation-for="ReservedSpots" class="text-danger"></span>
+        </div>
+        <div class="col-md-3 col-md-offset-1 form-group">
+            <div class="checkbox">
+                <input asp-for="AllowRegistrations" />
+                <label asp-for="AllowRegistrations"></label>
+            </div>
+            @if (Model.EnableWaitList)
+            {
+                <div class="checkbox">
+                    <input asp-for="AllowWaitList" />
+                    <label asp-for="AllowWaitList"></label>
+                </div>
+            }
+        </div>
+    </div>

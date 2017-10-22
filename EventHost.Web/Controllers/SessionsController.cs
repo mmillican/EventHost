@@ -60,6 +60,10 @@ namespace EventHost.Web.Controllers
             model.SectionOptions = await GetEventSectionOptions(eventId);
             model.UserOptions = await GetUserOptions();
 
+            // Defaults
+            model.AllowRegistrations = true;
+            model.EnableWaitList = evt.EnableWaitLists;
+
             return View(model);
         }
 
@@ -75,6 +79,7 @@ namespace EventHost.Web.Controllers
 
             model.SectionOptions = await GetEventSectionOptions(eventId);
             model.UserOptions = await GetUserOptions();
+            model.EnableWaitList = evt.EnableWaitLists;
 
             var section = await _dbContext.Sections.FindAsync(model.SectionId);
             if (section == null)
@@ -102,7 +107,7 @@ namespace EventHost.Web.Controllers
                     AllowRegistrations = model.AllowRegistrations,
                     MaxSpots = model.MaxSpots,
                     ReservedSpots = model.ReservedSpots,
-                    AllowWaitList = model.AllowWaitList,
+                    AllowWaitList = evt.EnableWaitLists && model.AllowWaitList,
                     HostUserId = model.HostUserId,
                     LastUpdatedOn = DateTime.Now
                 };
@@ -140,6 +145,7 @@ namespace EventHost.Web.Controllers
             var model = session.ToEditModel();
             model.SectionOptions = await GetEventSectionOptions(eventId);
             model.UserOptions = await GetUserOptions();
+            model.EnableWaitList = evt.EnableWaitLists;
 
             return View(model);
         }
@@ -156,6 +162,7 @@ namespace EventHost.Web.Controllers
 
             model.SectionOptions = await GetEventSectionOptions(eventId);
             model.UserOptions = await GetUserOptions();
+            model.EnableWaitList = evt.EnableWaitLists;
 
             var session = await _dbContext.Sessions.FindAsync(id);
             if (session == null || session.EventId != eventId)
@@ -192,7 +199,7 @@ namespace EventHost.Web.Controllers
                 session.AllowRegistrations = model.AllowRegistrations;
                 session.MaxSpots = model.MaxSpots;
                 session.ReservedSpots = model.ReservedSpots;
-                session.AllowWaitList = model.AllowWaitList;
+                session.AllowWaitList = evt.EnableWaitLists && model.AllowWaitList;
                 session.HostUserId = model.HostUserId;
                 session.LastUpdatedOn = DateTime.Now;
 

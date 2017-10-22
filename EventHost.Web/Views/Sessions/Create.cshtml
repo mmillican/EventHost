@@ -6,105 +6,12 @@
 }
 
 <form asp-action="Create">
-    <div class="form-horizontal">
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-        <div class="form-group">
-            <label asp-for="SectionId" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <select asp-for="SectionId" asp-items="Model.SectionOptions" class="form-control"></select>
-                <span asp-validation-for="SectionId" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="Name" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="Description" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <textarea asp-for="Description" class="form-control"></textarea>
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="HostUserId" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <select asp-for="HostUserId" asp-items="Model.UserOptions" class="form-control"></select>
-                <span asp-validation-for="HostUserId" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="Address" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="Address" class="form-control" />
-                <span asp-validation-for="Address" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="City" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="City" class="form-control" />
-                <span asp-validation-for="City" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="State" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="State" class="form-control" />
-                <span asp-validation-for="State" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="PostalCode" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="PostalCode" class="form-control" />
-                <span asp-validation-for="PostalCode" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <div class="checkbox">
-                    <input asp-for="AllowRegistrations" />
-                    <label asp-for="AllowRegistrations"></label>
-                </div>
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <div class="checkbox">
-                    <input asp-for="AllowWaitList" />
-                    <label asp-for="AllowWaitList"></label>
-                </div>
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="MaxSpots" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="MaxSpots" class="form-control" />
-                <span asp-validation-for="MaxSpots" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="ReservedSpots" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="ReservedSpots" class="form-control" />
-                <span asp-validation-for="ReservedSpots" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Create" class="btn btn-default" />
-            </div>
-        </div>
-    </div>
-</form>
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+    @await Html.PartialAsync("_EditForm", Model)
+    
+    <button type="submit" class="btn btn-primary">Create session</button>
+</form>
 
 @section Scripts 
 {
