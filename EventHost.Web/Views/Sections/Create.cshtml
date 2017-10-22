@@ -24,14 +24,14 @@
         <div class="form-group">
             <label asp-for="StartOn" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <kendo-datetimepicker for="StartOn" deferred="true"></kendo-datetimepicker>
+                <kendo-datetimepicker for="StartOn" deferred="true" />
                 <span asp-validation-for="StartOn" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
             <label asp-for="EndOn" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <kendo-datetimepicker for="EndOn" deferred="true"></kendo-datetimepicker>
+                <kendo-datetimepicker for="EndOn" deferred="true" />
                 <span asp-validation-for="EndOn" class="text-danger"></span>
             </div>
         </div>
@@ -50,4 +50,27 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        $(document).ready(function () {
+            function startChange() {
+                var startDate = $dpStart.value(),
+                    endDate = $dpEnd.value();
+                
+                if (startDate) {
+                    startDate = new Date(startDate);
+                    startDate.setDate(startDate.getDate());
+                    $dpEnd.min(startDate);
+                    $dpEnd.value(startDate);
+                } 
+            }
+
+            var $dpStart = $('#StartOn').data('kendoDateTimePicker')
+                , $dpEnd = $('#EndOn').data('kendoDateTimePicker');
+
+            $dpStart.bind('change', startChange);
+            
+            $dpEnd.min($dpStart.value());
+        });
+    </script>
 }

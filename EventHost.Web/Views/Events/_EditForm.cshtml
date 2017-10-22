@@ -1,0 +1,62 @@
+﻿@model EventHost.Web.Models.Events.EditEventViewModel
+
+<div class="row">
+    <div class="col-md-6 form-group">
+        <label asp-for="Name">Event name</label>
+        <input asp-for="Name" class="form-control" placeholder="What's the name of your event?" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12 form-group">
+        <label asp-for="Description"></label>
+        <span class="text-muted">Describe your event.  This will appear at the top of your event's page.</span>
+        <textarea asp-for="Description" class="form-control"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-3 form-group">
+        <label asp-for="StartOn">Event start date</label>
+        <kendo-datetimepicker for="StartOn" deferred="true" />
+        <span asp-validation-for="StartOn" class="text-danger"></span>
+    </div>
+    <div class="col-md-3 form-group">
+        <label asp-for="EndOn">End date</label>
+        <kendo-datetimepicker for="EndOn" deferred="true" />
+        <span asp-validation-for="EndOn" class="text-danger"></span>
+    </div>
+</div>
+
+<h4>Registration</h4>
+
+<div class="row">
+    <div class="col-md-3 form-group">
+        <label asp-for="RegistrationStartOn">Registration opens</label>
+        <kendo-datetimepicker for="RegistrationStartOn" deferred="true" />
+        <span asp-validation-for="RegistrationStartOn" class="text-danger"></span>
+    </div>
+    <div class="col-md-3 form-group">
+        <label asp-for="RegistrationEndOn">Closes</label>
+        <kendo-datetimepicker for="RegistrationEndOn" deferred="true" />
+        <span asp-validation-for="RegistrationEndOn" class="text-danger"></span>
+    </div>
+    <div class="col-md-6 form-group">
+        <div class="checkbox">
+            <input asp-for="EnableWaitLists" />
+            <label asp-for="EnableWaitLists">
+                Enable session wait lists<br />
+                <span class="text-muted">Allow sessions to have wait-lists if an event session is full</span>
+            </label>
+        </div>
+        <div class="checkbox">
+            <input asp-for="EnableAutomaticApproval" />
+            <label asp-for="EnableAutomaticApproval">
+                Automatic approval for registrations<br />
+                <span class="text-muted">If enabled, session registrations do not need approval</span>
+            </label>
+        </div>
+    </div>
+</div>

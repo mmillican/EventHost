@@ -214,7 +214,10 @@ namespace EventHost.Web.Controllers
             var sections = await _dbContext.Sections
                 .Where(x => x.EventId == eventId)
                 .OrderBy(x => x.StartOn)
-                .Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name })
+                .Select(x => new SelectListItem {
+                    Value = x.Id.ToString(),
+                    Text = $"{x.Name} ({x.StartOn:ddd, h:mm tt} - {x.EndOn:ddd, h:mm tt})"
+                })
                 .ToListAsync();
 
             return sections;

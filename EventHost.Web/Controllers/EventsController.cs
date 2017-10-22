@@ -53,6 +53,8 @@ namespace EventHost.Web.Controllers
         public IActionResult Create()
         {
             var model = new EditEventViewModel();
+            model.StartOn = DateTime.Now;
+            model.EndOn = DateTime.Now.AddDays(1);
 
             return View(model);
         }

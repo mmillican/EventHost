@@ -5,77 +5,12 @@
 }
 
 <form asp-action="Edit" asp-route-id="@Model.Id">
-    <div class="form-horizontal">
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-        <div class="form-group">
-            <label asp-for="Name" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="Description" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <textarea asp-for="Description" class="form-control"></textarea>
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="StartOn" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <kendo-datetimepicker for="StartOn" deferred="true"></kendo-datetimepicker>
-                <span asp-validation-for="StartOn" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="EndOn" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <kendo-datetimepicker for="EndOn" deferred="true"></kendo-datetimepicker>
-                <span asp-validation-for="EndOn" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="RegistrationStartOn" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <kendo-datetimepicker for="RegistrationStartOn" deferred="true"></kendo-datetimepicker>
-                <span asp-validation-for="RegistrationStartOn" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="RegistrationEndOn" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <kendo-datetimepicker for="RegistrationEndOn" deferred="true"></kendo-datetimepicker>
-                <span asp-validation-for="RegistrationEndOn" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <div class="checkbox">
-                    <input asp-for="EnableWaitLists" />
-                    <label asp-for="EnableWaitLists"></label>
-                </div>
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <div class="checkbox">
-                    <input asp-for="EnableAutomaticApproval" />
-                    <label asp-for="EnableAutomaticApproval"></label>
-                </div>
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Save event" class="btn btn-primary" />
-            </div>
-        </div>
-    </div>
-</form>
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+    @await Html.PartialAsync("_EditForm", Model)
+
+    <button type="submit" class="btn btn-primary">Save event</button>
+</form>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

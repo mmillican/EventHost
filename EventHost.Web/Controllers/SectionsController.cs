@@ -45,7 +45,7 @@ namespace EventHost.Web.Controllers
             model.EventId = evt.Id;
             model.EventName = evt.Name;
             model.StartOn = evt.StartOn;
-            model.EndOn = evt.EndOn;
+            model.EndOn = evt.StartOn;
 
             return View(model);
         }
