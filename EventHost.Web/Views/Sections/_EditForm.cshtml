@@ -1,0 +1,32 @@
+﻿@model EventHost.Web.Models.Sections.EditSectionViewModel
+        
+<div class="row">
+    <div class="col-md-6 form-group">
+        <label asp-for="Name" class="control-label"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12 form-group">
+        <label asp-for="Description" class="control-label"></label>
+        <span class="text-muted">(This will appear on the event details page within each section)</span>
+        <textarea asp-for="Description" class="form-control" rows="5"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span></div>
+</div>
+
+<div class="row">
+    <div class="col-md-3 form-group">
+        <label asp-for="StartOn">Section start date/time</label>
+        <kendo-datetimepicker for="StartOn" deferred="true" />
+        <span asp-validation-for="StartOn" class="text-danger"></span>
+    </div>
+    <div class="col-md-3 form-group">
+        <label asp-for="EndOn">End date/time</label>
+        <kendo-datetimepicker for="EndOn" deferred="true" />
+        <span asp-validation-for="EndOn" class="text-danger"></span>
+    </div>
+</div>
+
+<input type="hidden" asp-for="EventId" />

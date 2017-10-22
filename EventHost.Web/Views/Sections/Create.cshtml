@@ -6,47 +6,10 @@
 }
 
 <form asp-action="Create">
-    <div class="form-horizontal">
-        <div class="form-group">
-            <label asp-for="Name" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="Description" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="StartOn" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <kendo-datetimepicker for="StartOn" deferred="true" />
-                <span asp-validation-for="StartOn" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="EndOn" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <kendo-datetimepicker for="EndOn" deferred="true" />
-                <span asp-validation-for="EndOn" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="hidden" asp-for="EventId" />
-                <input type="submit" value="Save section" class="btn btn-primary" />
-            </div>
-        </div>
-    </div>
-</form>
+    @await  Html.PartialAsync("_EditForm", Model)
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+    <button type="submit" class="btn btn-primary">Create section</button>
+</form>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
