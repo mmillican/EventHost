@@ -38,9 +38,16 @@ namespace EventHost.Web.Entities.Events
 
         public bool AllowWaitList { get; set; }
 
-        public int HostUserId { get; set; }
+        public int? HostUserId { get; set; }
         [ForeignKey("HostUserId")]
         public virtual User Host { get; set; }
+
+        /// <summary>
+        /// Non-user host name
+        /// </summary>
+        /// <remarks>If <see cref="HostUserId"/> is null, HostName should be set</remarks>
+        [MaxLength(100)]
+        public string HostName { get; set; }
 
         public DateTime LastUpdatedOn { get; set; }
 

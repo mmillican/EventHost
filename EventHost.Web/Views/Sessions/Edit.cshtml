@@ -33,6 +33,24 @@
                         css: true
                     }
                 });
+
+                var $ddlHostUserId = $('#HostUserId'),
+                    $divHostName = $('#host-name-wrapper'),
+                    $txtHostName = $('#HostName');
+
+                toggleNonUserHost();
+                $ddlHostUserId.on('change', function () {
+                    toggleNonUserHost();
+                });
+
+                function toggleNonUserHost() {
+                    if ($ddlHostUserId.val()) {
+                        $divHostName.hide();
+                        $txtHostName.val(null);
+                    } else {
+                        $divHostName.show();
+                    }
+                }
             });
     </script>
 }

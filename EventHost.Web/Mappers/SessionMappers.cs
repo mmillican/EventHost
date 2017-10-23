@@ -22,7 +22,7 @@ namespace EventHost.Web.Mappers
                 .ForMember(x => x.SectionOptions, x => x.Ignore())
                 .ForMember(x => x.UserOptions, x => x.Ignore());
             CreateMap<Session, SessionModel>()
-                .ForMember(x => x.HostName, opt => opt.MapFrom(u => $"{u.Host.FirstName} {u.Host.LastName}"));
+                .ForMember(x => x.HostName, opt => opt.MapFrom(u => u.Host != null ? $"{u.Host.FirstName} {u.Host.LastName}" : u.HostName));
                 //.ForMember(x => x.RegistrationCount, opt => opt.MapFrom(x => x.Registrations.Count));
         }
     }

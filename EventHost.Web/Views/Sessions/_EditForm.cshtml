@@ -25,11 +25,15 @@
     <div class="row">
         <div class="col-md-6 form-group">
             <label asp-for="HostUserId"></label>
-            <select asp-for="HostUserId" asp-items="Model.UserOptions" class="form-control"></select>
+            <select asp-for="HostUserId" asp-items="Model.UserOptions" class="form-control">
+                <option value="">Other (non-user)</option>
+            </select>
             <span asp-validation-for="HostUserId" class="text-danger"></span>
         </div>
-        <div class="col-md-6 form-group">
-            <!-- TODO: Add "other" user - free fill option-->
+        <div class="col-md-6 form-group" id="host-name-wrapper">
+            <label asp-for="HostName"></label>
+            <input asp-for="HostName" class="form-control" />
+            <span asp-validation-for="HostName" class="text-danger"></span>
         </div>
     </div>
 

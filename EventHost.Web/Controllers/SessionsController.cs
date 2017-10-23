@@ -112,6 +112,11 @@ namespace EventHost.Web.Controllers
                     LastUpdatedOn = DateTime.Now
                 };
 
+                if(!session.HostUserId.HasValue)
+                {
+                    session.HostName = model.HostName;
+                }
+
                 _dbContext.Sessions.Add(session);
                 await _dbContext.SaveChangesAsync();
 
@@ -201,6 +206,10 @@ namespace EventHost.Web.Controllers
                 session.ReservedSpots = model.ReservedSpots;
                 session.AllowWaitList = evt.EnableWaitLists && model.AllowWaitList;
                 session.HostUserId = model.HostUserId;
+                if (!session.HostUserId.HasValue)
+                {
+                    session.HostName = model.HostName;
+                }
                 session.LastUpdatedOn = DateTime.Now;
 
                 await _dbContext.SaveChangesAsync();

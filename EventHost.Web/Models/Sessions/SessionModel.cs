@@ -48,8 +48,10 @@ namespace EventHost.Web.Models.Sessions
         [Display(Name = "Allow wait list")]
         public bool AllowWaitList { get; set; }
 
-        [Display(Name = "Host")]
-        public int HostUserId { get; set; }
+        [Display(Name = "Host (user)")]
+        public int? HostUserId { get; set; }
+
+        [Display(Name = "Host name")]
         public string HostName { get; set; }
 
         public DateTime LastUpdatedOn { get; set; }
