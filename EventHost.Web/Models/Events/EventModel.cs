@@ -23,5 +23,9 @@ namespace EventHost.Web.Models.Events
         public string OwnerName { get; set; }
 
         public string Slug { get; set; }
+
+        public bool HideFromPublicLists { get; set; }
+        public bool RequirePassword { get; set; }
+        public string JoinPassword { get; set; }
     }
 }

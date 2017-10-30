@@ -12,6 +12,7 @@ namespace EventHost.Web.Models.Events
         public int CurrentUserId { get; set; }
         public bool UserCanEdit { get; set; }
         public bool RegistrationIsOpen { get; set; }
+        public bool UserIsMember { get; set; }
 
         public IEnumerable<SectionModel> Sections { get; set; } = new List<SectionModel>();
         public IEnumerable<SessionModel> Sessions { get; set; }

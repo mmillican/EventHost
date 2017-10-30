@@ -1,0 +1,23 @@
+﻿@model EventHost.Web.Models.Events.JoinEventViewModel
+@{ 
+    ViewData["Title"] = $"Join {Model.Event.Name}";
+}
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="JoinEvent" asp-route-eventId="@Model.Event.Id">
+            @if (Model.Event.RequirePassword)
+            {
+                <h3>This event requires a password to join</h3>
+                <div class="form-group">
+                    <label asp-for="Password">Event password</label>
+                    <input type="password" asp-for="Password" class="form-control" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+            }
+
+            <button type="submit" id="btn-join-event" class="btn btn-primary">Join event</button>
+        </form>
+    </div>
+    <div class="col-md-6"></div>
+</div>

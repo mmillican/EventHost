@@ -39,7 +39,21 @@ namespace EventHost.Web.Controllers
         [HttpGet("")]
         public async Task<IActionResult> Index()
         {
-            var events = await _dbContext.Events.ProjectTo<EventModel>().ToListAsync();
+            var currentUser = await _userManager.GetUserAsync(User);
+
+            var userEventIds = await _dbContext.EventMembers
+                    .Where(x => x.UserId == currentUser.Id)
+                    .Select(x => x.EventId)
+                    .ToListAsync();
+
+            var events = await _dbContext.Events.Include(x => x.Members)
+                .Where(x => !x.HideFromPublicLists
+                    || (userEventIds.Contains(x.Id)
+                    || x.OwnerUserId == currentUser.Id))
+                .OrderBy(x => x.StartOn)
+                .ThenBy(x => x.EndOn)
+                .ProjectTo<EventModel>()
+                .ToListAsync();
 
             var model = new EventListViewModel
             {
@@ -75,6 +89,14 @@ namespace EventHost.Web.Controllers
             model.Event = evt.ToModel();
             model.CurrentUserId = currentUser.Id;
 
+            model.UserIsMember = await _dbContext.EventMembers.AnyAsync(x => x.EventId == evt.Id && x.UserId == currentUser.Id);
+
+            if (evt.RequirePassword && !model.UserIsMember && evt.OwnerUserId != currentUser.Id)
+            {
+                _logger.LogInformation($"Event ID {evt.Id} ({evt.Name}) requires password to join and user ID {currentUser.Id} is not member");
+                return RedirectToAction(nameof(JoinEvent), new { id = evt.Id });
+            }
+
             model.UserCanEdit = evt.OwnerUserId == currentUser.Id;
             model.RegistrationIsOpen = evt.IsEventRegistrationOpen(DateTime.UtcNow);
 
@@ -96,6 +118,82 @@ namespace EventHost.Web.Controllers
                 .ToListAsync();
 
             return View(model);
+        }
+
+        [HttpGet("{id}/join")]
+        public async Task<IActionResult> JoinEvent(int id)
+        {
+            var evt = await _dbContext.Events.FindAsync(id);
+            if (evt == null)
+            {
+                // TODO: Diplay error
+                return RedirectToAction(nameof(Index));
+            }
+
+            // TODO: Handle guest users (remove auth attribute)
+            var currentUser = await _userManager.GetUserAsync(User);
+
+            var model = new JoinEventViewModel();
+            model.Event = evt.ToModel();
+            model.IsCurrentUserMember = await _dbContext.EventMembers.AnyAsync(x => x.EventId == evt.Id && x.UserId == currentUser.Id);
+            if (model.IsCurrentUserMember)
+            {
+                return RedirectToAction(nameof(Details), new { slug = evt.Slug });
+            }
+
+            return View(model);
+        }
+
+        [HttpPost("{id}/join")]
+        public async Task<IActionResult> JoinEvent(int id, JoinEventViewModel model)
+        {
+            var evt = await _dbContext.Events.FindAsync(id);
+            if (evt == null)
+            {
+                _logger.LogInformation($"Event ID {id} not found");
+
+                // TODO: Display error
+                return RedirectToAction(nameof(Index));
+            }
+
+            model.Event = evt.ToModel();
+
+            var currentUser = await _userManager.GetUserAsync(User);
+            var userIsMember = await _dbContext.EventMembers.AnyAsync(x => x.EventId == evt.Id && x.UserId == currentUser.Id);
+            if (userIsMember)
+            {
+                _logger.LogInformation($"User ID {currentUser.Id} is already member of Event ID {evt.Id}");
+
+                return RedirectToAction(nameof(Details), new { slug = evt.Slug });
+            }
+
+            if (evt.RequirePassword && model.Password != evt.JoinPassword)
+            {
+                ModelState.AddModelError(nameof(model.Password), "Event password is invalid");
+                return View(model);
+            }
+
+            try
+            {
+                var member = new EventMember
+                {
+                    EventId = evt.Id,
+                    UserId = currentUser.Id,
+                    JoinDate = DateTime.UtcNow,
+                    JoinMethod = EventMemberJoinMethod.Password
+                };
+
+                _dbContext.EventMembers.Add(member);
+                await _dbContext.SaveChangesAsync();
+
+                // TODO: show success message
+                return RedirectToAction(nameof(Details), new { slug = evt.Slug });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error joining user ID {currentUser.Id} to event ID {evt.Id}");
+                return View(model);
+            }
         }
 
         [HttpPost("new")]
@@ -120,6 +218,9 @@ namespace EventHost.Web.Controllers
                     RegistrationEndOn = model.RegistrationEndOn,
                     EnableWaitLists = model.EnableWaitLists,
                     EnableAutomaticApproval = model.EnableAutomaticApproval,
+                    HideFromPublicLists = model.HideFromPublicLists,
+                    RequirePassword = model.RequirePassword,
+                    JoinPassword = model.JoinPassword,
                     Owner = currentUser
                 };
 
@@ -179,6 +280,9 @@ namespace EventHost.Web.Controllers
                 evt.RegistrationEndOn = model.RegistrationEndOn;
                 evt.EnableWaitLists = model.EnableWaitLists;
                 evt.EnableAutomaticApproval = model.EnableAutomaticApproval;
+                evt.HideFromPublicLists = model.HideFromPublicLists;
+                evt.RequirePassword = model.RequirePassword;
+                evt.JoinPassword = model.JoinPassword;
 
                 if (string.IsNullOrEmpty(evt.Slug))
                     evt.Slug = await GenerateEventSlug(evt);

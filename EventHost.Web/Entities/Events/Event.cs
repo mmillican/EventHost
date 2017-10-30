@@ -3,8 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EventHost.Web.Entities.Events
 {
@@ -33,7 +31,15 @@ namespace EventHost.Web.Entities.Events
         [MaxLength(500)]
         public string Slug { get; set; }
 
+        public bool HideFromPublicLists { get; set; }
+        public bool RequirePassword { get; set; }
+        [MaxLength(50)]
+        public string JoinPassword { get; set; }
+
+        // TODO: Invite only
+
         public virtual IList<Section> Sections { get; set; } = new List<Section>();
         public virtual IList<Session> Sessions { get; set; } = new List<Session>();
+        public virtual IList<EventMember> Members { get; set; } = new List<EventMember>();
     }
 }

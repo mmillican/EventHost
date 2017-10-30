@@ -21,6 +21,11 @@ namespace EventHost.Web.Models.Events
         public bool EnableWaitLists { get; set; }
         public bool EnableAutomaticApproval { get; set; }
 
+        public bool HideFromPublicLists { get; set; }
+        public bool RequirePassword { get; set; }
+        [MaxLength(50)]
+        public string JoinPassword { get; set; }
+
         public int OwnerUserId { get; set; }
     }
 }

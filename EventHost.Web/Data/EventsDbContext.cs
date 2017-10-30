@@ -9,6 +9,9 @@ namespace EventHost.Web.Data
     public class EventsDbContext : IdentityDbContext<User, Role, int>
     {
         public DbSet<Event> Events { get; set; }
+
+        public DbSet<EventMember> EventMembers { get; set; }
+
         public DbSet<Session> Sessions { get; set; }
         public DbSet<Section> Sections { get; set; }
         public DbSet<Registration> Registrations { get; set; }

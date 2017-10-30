@@ -30,6 +30,26 @@
     </div>
 </div>
 
+<h4>Visibility</h4>
+
+<div class="row">
+    <div class="col-md-6 form-group">
+        <label asp-for="HideFromPublicLists" class="checkbox-inline">
+            <input asp-for="HideFromPublicLists" />
+            Hide from public lists
+        </label>
+        <label asp-for="RequirePassword" class="checkbox-inline">
+            <input asp-for="RequirePassword" />
+            Require password to join
+        </label>
+    </div>
+    <div class="col-md-3 form-group" id="join-password-wrapper">
+        <label asp-for="JoinPassword">Join password</label>
+        <input type="text" asp-for="JoinPassword" class="form-control" />
+        <span asp-validation-for="JoinPassword" class="text-danger"></span>
+    </div>
+</div>
+
 <h4>Registration</h4>
 
 <div class="row">
