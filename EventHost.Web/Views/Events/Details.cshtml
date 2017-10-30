@@ -101,7 +101,7 @@
                             <a id="session-@session.Id"></a>
                             <strong>@session.Name</strong>, 
                             <em>hosted by @session.HostName</em>
-                            @if (Model.UserCanEdit)
+                            @if (Model.UserCanEdit || session.HostUserId == Model.CurrentUserId)
                             {
                                 <span class="pull-right">
                                     <a asp-action="Edit" asp-controller="Sessions" asp-route-eventId="@Model.Event.Id" asp-route-id="@session.Id" class="btn btn-sm btn-default">Edit</a>

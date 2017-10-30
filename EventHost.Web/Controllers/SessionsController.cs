@@ -134,15 +134,22 @@ namespace EventHost.Web.Controllers
         [HttpGet("edit/{id}")]
         public async Task<IActionResult> Edit(int eventId, int id)
         {
+            var currentUser = await _userManager.GetUserAsync(User);
+
             var evt = await _dbContext.Events.FindAsync(eventId);
             if (evt == null)
             {
                 // TODO: Diplay error
                 return RedirectToAction("Index", "Events");
-            }
+            }            
 
             var session = await _dbContext.Sessions.FindAsync(id);
             if (session == null || session.EventId != eventId)
+            {
+                return RedirectToAction("Details", "Events", new { slug = evt.Slug });
+            }
+
+            if (evt.OwnerUserId != currentUser.Id && session.HostUserId != currentUser.Id)
             {
                 return RedirectToAction("Details", "Events", new { slug = evt.Slug });
             }
